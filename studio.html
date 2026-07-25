@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Studio</title>
+<link rel="icon" href="/logo.svg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="/config.js"></script>
+<style>
+  *{box-sizing:border-box}html,body{margin:0}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--ink,#1d1a16);background:var(--paper,#f4f1ea);min-height:100vh}
+  h1,h2,h3{font-family:Georgia,serif;font-weight:800;margin:0}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 20px 70px}
+  .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}
+  .sub{color:var(--ink2);font-size:14px;margin:3px 0 14px}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+  .tab{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:8px 14px;font-size:13px;font-weight:600;color:var(--ink2);cursor:pointer}
+  .tab.on{background:linear-gradient(180deg,var(--accent),var(--accent2));color:var(--onAccent);border-color:transparent}
+  .grid{display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start}
+  @media(max-width:820px){.grid{grid-template-columns:1fr}}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+  .panel h3{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-bottom:10px}
+  .blurb{font-size:12.5px;color:var(--mut);margin:-4px 0 12px}
+  .fld{margin-bottom:10px}.fld label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut);font-weight:700;margin-bottom:4px}
+  .fld input,.fld select{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 10px;font:inherit;font-size:13.5px;background:var(--paper);color:var(--ink)}
+  .summary{font-family:Georgia,serif;font-weight:700;font-size:15px;color:var(--accent);margin-bottom:10px;line-height:1.35}
+  .banner{display:flex;gap:9px;align-items:flex-start;background:#fbf4e9;border:1px solid #e6d3ad;color:#8a5f14;border-radius:11px;padding:10px 12px;font-size:12.5px;margin-bottom:12px;line-height:1.45}
+  .banner b{color:#a9741a}
+  .drawwrap{margin-bottom:14px}
+  .specs{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;margin:6px 0 14px}
+  @media(max-width:560px){.specs{grid-template-columns:1fr}}
+  .spec{display:flex;justify-content:space-between;gap:10px;border-bottom:1px dotted var(--line);padding:5px 0;font-size:13px}
+  .spec span{color:var(--mut)}.spec b{color:var(--ink);text-align:right}
+  .notes{margin:0;padding-left:18px;color:var(--ink2);font-size:12.5px;line-height:1.6}
+  .acts{display:flex;gap:9px;margin-top:14px;flex-wrap:wrap}
+  .btn{background:linear-gradient(180deg,var(--accent),var(--accent2));color:var(--onAccent);border:none;border-radius:10px;padding:10px 15px;font-weight:700;font-family:Georgia,serif;font-size:13.5px;cursor:pointer}
+  .mini{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 15px;font:inherit;font-weight:600;cursor:pointer;color:var(--ink2)}
+  .disc{color:var(--mut);font-size:11px;margin-top:16px;line-height:1.6}
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent)!important;outline-offset:2px}
+</style>
+</head>
+<body>
+<script src="/hub-nav.js" defer></script>
+<script src="/details-lib.js"></script>
+<script src="/assistant.js" defer></script>
+<div class="wrap">
+  <div class="eyebrow" id="eb"></div>
+  <h1 id="h1">Studio</h1>
+  <div class="sub" id="subhead">Describe it, get a to-scale dimensioned drawing you can drop into a set.</div>
+  <div class="tabs" id="tabs"></div>
+  <div class="grid">
+    <div class="panel">
+      <h3 id="genName">Parameters</h3>
+      <div class="blurb" id="genBlurb"></div>
+      <form id="form" autocomplete="off"></form>
+    </div>
+    <div class="panel">
+      <div class="summary" id="summary">—</div>
+      <div id="bannerWrap"></div>
+      <div class="drawwrap" id="draw"></div>
+      <div class="specs" id="specs"></div>
+      <h3 style="margin-bottom:6px">Notes</h3>
+      <ul class="notes" id="notes"></ul>
+      <div class="acts">
+        <button class="btn" id="dlBtn">⭳ Download SVG</button>
+        <button class="mini" id="cpBtn">Copy notes</button>
+      </div>
+    </div>
+  </div>
+  <div class="disc" id="disc"></div>
+</div>
+<script>
+(function(){
+  var el=function(id){return document.getElementById(id);};
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  var C=window.HUB_CONFIG||{}, BR=C.brand||{}, ST=C.studio||{};
+  var GENS=window.DETAILS||{};
+  var keys=(ST.details||Object.keys(GENS)).filter(function(k){return GENS[k];});
+  var LABEL=ST.label||'Detail Studio';
+  var cur=keys[0], lastRes=null;
+  el('eb').textContent=BR.name||''; el('h1').textContent=LABEL; document.title=(BR.name||'OS')+' · '+LABEL;
+  if(ST.subhead) el('subhead').textContent=ST.subhead;
+  el('disc').innerHTML='Parametric aids to speed up drawings & early sizing — <b>advisory only, not for construction</b>. Structural output must be confirmed by the engineer of record. '+esc(BR.credit||'');
+
+  el('tabs').innerHTML=keys.map(function(k){return '<button class="tab'+(k===cur?' on':'')+'" data-k="'+esc(k)+'">'+esc(GENS[k].label)+'</button>';}).join('');
+  el('tabs').querySelectorAll('.tab').forEach(function(b){b.addEventListener('click',function(){cur=b.getAttribute('data-k');el('tabs').querySelectorAll('.tab').forEach(function(x){x.classList.toggle('on',x===b);});buildForm();compute();});});
+
+  function buildForm(){
+    var g=GENS[cur]; el('genName').textContent=g.label+' — parameters'; el('genBlurb').textContent=g.blurb||'';
+    el('form').innerHTML=g.params.map(function(pr){
+      var ctrl;
+      if(pr.type==='select'){ ctrl='<select id="p_'+pr.k+'">'+pr.options.map(function(o){return '<option'+(String(o)===String(pr.def)?' selected':'')+'>'+esc(o)+'</option>';}).join('')+'</select>'; }
+      else { ctrl='<input id="p_'+pr.k+'" type="number" step="any" value="'+esc(pr.def)+'">'; }
+      return '<div class="fld"><label>'+esc(pr.label)+(pr.unit?' <span style="color:var(--mut)">('+esc(pr.unit)+')</span>':'')+'</label>'+ctrl+'</div>';
+    }).join('');
+    el('form').addEventListener('input',compute);
+    el('form').addEventListener('change',compute);
+  }
+  function readParams(g){ var p={}; g.params.forEach(function(pr){ var e=el('p_'+pr.k); if(!e)return; var v=e.value; if(pr.type==='number') v=(v===''?pr.def:+v); p[pr.k]=v; }); return p; }
+  function compute(){
+    var g=GENS[cur]; var res; try{ res=g.draw(readParams(g)); }catch(e){ el('summary').textContent='Check the inputs.'; return; }
+    lastRes=res;
+    el('summary').textContent=res.summary||'';
+    el('bannerWrap').innerHTML=res.flag?'<div class="banner"><span>⚠</span><div><b>Preliminary — verify with the engineer of record (PE).</b> This is a planning aid, not a stamped or construction document.</div></div>':'';
+    el('draw').innerHTML=res.svg||'';
+    el('specs').innerHTML=(res.specs||[]).map(function(s){return '<div class="spec"><span>'+esc(s[0])+'</span><b>'+esc(s[1])+'</b></div>';}).join('');
+    el('notes').innerHTML=(res.notes||[]).map(function(n){return '<li>'+esc(n)+'</li>';}).join('');
+  }
+
+  // download SVG with the theme colors inlined (so it opens correctly outside the app)
+  el('dlBtn').addEventListener('click',function(){
+    var s=el('draw').querySelector('svg'); if(!s)return;
+    var cs=getComputedStyle(document.body), vars=['--ink','--ink2','--accent','--accent2','--cream','--line','--card','--mut','--paper','--onAccent'];
+    var out=s.outerHTML; vars.forEach(function(v){ var val=(cs.getPropertyValue(v)||'').trim()||'#333'; out=out.split('var('+v+')').join(val); });
+    var blob=new Blob(['<?xml version="1.0" encoding="UTF-8"?>\n'+out],{type:'image/svg+xml'});
+    var a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(BR.short||'detail')+'-'+cur+'.svg'; a.click(); setTimeout(function(){URL.revokeObjectURL(a.href);},1500);
+  });
+  el('cpBtn').addEventListener('click',function(){
+    if(!lastRes)return; var t=(GENS[cur].label)+'\n'+(lastRes.summary||'')+'\n\n'+(lastRes.specs||[]).map(function(s){return s[0]+': '+s[1];}).join('\n')+'\n\nNotes:\n'+(lastRes.notes||[]).map(function(n){return '• '+n;}).join('\n');
+    if(navigator.clipboard) navigator.clipboard.writeText(t); el('cpBtn').textContent='Copied'; setTimeout(function(){el('cpBtn').textContent='Copy notes';},1400);
+  });
+
+  window.AssistantContext=function(){ var g=GENS[cur]; return { view:LABEL, generator:g&&g.label, params:readParams(g||{params:[]}), result:lastRes?{summary:lastRes.summary,specs:lastRes.specs}:null,
+    note:'Structural output is preliminary; tell the user to verify with the engineer of record.' }; };
+
+  buildForm(); compute();
+})();
+</script>
+</body>
+</html>

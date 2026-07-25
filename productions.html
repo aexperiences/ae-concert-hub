@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Productions</title>
+<link rel="icon" href="/logo.svg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="/config.js"></script>
+<style>
+  *{box-sizing:border-box}html,body{margin:0}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--ink,#241d2e);background:var(--paper,#f5f3f7);min-height:100vh}
+  h1,h2,h3{font-family:Georgia,serif;font-weight:800;margin:0}
+  .wrap{max-width:1180px;margin:0 auto;padding:20px 20px 70px}
+  .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}
+  .bar{display:flex;align-items:center;gap:12px;margin:8px 0 16px;flex-wrap:wrap}.sp{flex:1}
+  .pill{font-size:12.5px;color:var(--ink2);background:var(--card);border:1px solid var(--line);border-radius:99px;padding:7px 13px}.pill b{color:var(--accent)}
+  .btn{background:linear-gradient(180deg,var(--accent),var(--accent2));color:var(--onAccent);border:none;border-radius:10px;padding:11px 17px;font-weight:700;font-family:Georgia,serif;font-size:14px;cursor:pointer}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:16px;cursor:pointer;box-shadow:0 5px 16px rgba(40,25,50,.05);transition:.14s}
+  .card:hover{transform:translateY(-2px);border-color:var(--accent);box-shadow:0 12px 26px rgba(40,25,50,.1)}
+  .ph{display:flex;align-items:flex-start;gap:12px}
+  .poster{font-size:34px;line-height:1;background:var(--cream);border:1px solid var(--line);border-radius:12px;width:56px;height:56px;display:grid;place-items:center;flex:none}
+  .ttl{font-family:Georgia,serif;font-weight:800;font-size:18px;line-height:1.15}
+  .au{font-size:12.5px;color:var(--mut)}
+  .st{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:2px 9px;border-radius:99px}
+  .st.sale{background:#e9f4ee;color:#2f6a52}.st.reh{background:#fbf4e9;color:#a9741a}.st.up{background:#efe9f6;color:var(--accent)}.st.clo{background:rgba(0,0,0,.06);color:var(--mut)}
+  .blurb{font-size:13px;color:var(--ink2);margin:11px 0 8px;line-height:1.45}
+  .meta{display:flex;gap:8px;flex-wrap:wrap;font-size:11.5px;color:var(--mut);border-top:1px solid var(--line2);padding-top:9px}
+  .meta b{color:var(--ink2)}
+  .scrim{position:fixed;inset:0;background:rgba(20,15,25,.5);z-index:60;display:none;align-items:center;justify-content:center;padding:18px}.scrim.on{display:flex}
+  .modal{background:var(--card);border-radius:16px;max-width:520px;width:100%;max-height:90vh;overflow:auto;padding:20px 22px;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+  .modal h2{color:var(--accent);font-size:20px;margin-bottom:12px}
+  .fld{margin-bottom:9px}.fld label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut);font-weight:700;margin-bottom:4px}
+  .fld input,.fld select,.fld textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 10px;font:inherit;font-size:13.5px;background:var(--paper);color:var(--ink)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:9px}.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+  .perfs{margin-top:6px;font-size:12.5px;color:var(--ink2)}
+  .perfs .pf{display:flex;justify-content:space-between;border-bottom:1px dotted var(--line);padding:5px 0}
+  .mrow{display:flex;gap:9px;margin-top:14px}
+  .mini{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:10px 14px;font:inherit;font-weight:600;cursor:pointer;color:var(--ink2)}.del{color:#b23b3b;border-color:#e6c0c0}
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent)!important;outline-offset:2px}
+</style>
+</head>
+<body>
+<script src="/hub-nav.js" defer></script>
+<script src="/data.js"></script>
+<script src="/assistant.js" defer></script>
+<div class="wrap">
+  <div class="eyebrow">Amphitheater OS</div>
+  <h1>Productions</h1>
+  <div class="bar">
+    <span class="pill"><b id="pOnSale">—</b> on sale</span>
+    <span class="pill"><b id="pPerf">—</b> performances</span>
+    <span class="pill"><b id="pSeason">—</b> in the season</span>
+    <div class="sp"></div>
+    <button class="btn" id="newBtn" onclick="openNew()">＋ New</button>
+  </div>
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="scrim" id="scrim" onclick="if(event.target===this)close2()"><div class="modal">
+  <h2 id="mTitle">New production</h2>
+  <div class="two"><div class="fld"><label>Title</label><input id="f_title"></div>
+    <div class="fld"><label>Poster emoji</label><input id="f_poster" maxlength="4" placeholder="🎭"></div></div>
+  <div class="two"><div class="fld"><label>Author</label><input id="f_author"></div>
+    <div class="fld"><label>Genre</label><input id="f_genre" placeholder="Comedy, Musical…"></div></div>
+  <div class="two"><div class="fld"><label>Status</label><select id="f_status"><option>Upcoming</option><option>Rehearsal</option><option>On Sale</option><option>Closed</option></select></div>
+    <div class="fld"><label>Run</label><input id="f_run" placeholder="dates"></div></div>
+  <div class="two"><div class="fld"><label>Run start</label><input id="f_runStart" type="date"></div>
+    <div class="fld"><label>Run end</label><input id="f_runEnd" type="date"></div></div>
+  <div class="fld"><label>Blurb</label><textarea id="f_blurb" style="min-height:56px"></textarea></div>
+  <div class="perfs" id="perfsBox"></div>
+  <div class="mrow"><button class="btn" style="flex:1" onclick="saveIt()">Save</button><button class="mini del" id="delBtn" onclick="delIt()">Delete</button><button class="mini" onclick="close2()">Cancel</button></div>
+</div></div>
+
+<script>
+(function(){
+  var el=function(id){return document.getElementById(id);};
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  var C=window.HUB_CONFIG||{}, BR=C.brand||{}, BO=C.boxOffice||{}, COL=BO.eventCollection||'productions', NOUN=BO.eventNoun||'Production';
+  var DV=(C.venues&&(C.venues[C.defaultVenue]||C.venues[Object.keys(C.venues||{})[0]]))||{}, TIERS=DV.tiers||(C.house||{}).tiers||{};
+  var PRODS=[], CUR=null;
+  (function(){ var e=document.querySelector('.eyebrow'); if(e)e.textContent=BR.name||''; var h=document.querySelector('h1'); if(h)h.textContent=NOUN+'s'; document.title=(BR.name||'OS')+' · '+NOUN+'s'; var nb=document.getElementById('newBtn'); if(nb)nb.textContent='＋ New '+NOUN.toLowerCase(); })();
+  var stClass=function(s){s=String(s||'');return s==='On Sale'?'sale':s==='Rehearsal'?'reh':s==='Closed'?'clo':'up';};
+  var priceRange=function(){ var ps=Object.keys(TIERS).map(function(k){return TIERS[k].price;}); if(!ps.length)return ''; var mn=Math.min.apply(null,ps),mx=Math.max.apply(null,ps); return mn===mx?('$'+mn):('$'+mn+'–$'+mx); };
+
+  function load(){ window.HUBDATA.list(COL).then(function(a){ PRODS=a||[]; render(); }); }
+  function render(){
+    var onsale=PRODS.filter(function(p){return p.status==='On Sale';});
+    var perfs=PRODS.reduce(function(s,p){return s+((p.performances||[]).length);},0);
+    el('pOnSale').textContent=onsale.length; el('pPerf').textContent=perfs; el('pSeason').textContent=PRODS.filter(function(p){return p.status!=='Closed';}).length;
+    el('grid').innerHTML=PRODS.map(function(p){
+      var np=(p.performances||[]).length;
+      return '<div class="card" data-id="'+esc(p.id)+'"><div class="ph"><div class="poster">'+esc(p.poster||'🎭')+'</div>'+
+        '<div style="flex:1"><div class="ttl">'+esc(p.title||'Untitled')+'</div><div class="au">'+esc(p.author||'')+(p.genre?' · '+esc(p.genre):'')+'</div>'+
+        '<div style="margin-top:6px"><span class="st '+stClass(p.status)+'">'+esc(p.status||'')+'</span></div></div></div>'+
+        (p.blurb?'<div class="blurb">'+esc(p.blurb)+'</div>':'<div class="blurb" style="color:var(--mut)">—</div>')+
+        '<div class="meta"><span>📅 <b>'+esc(p.runStart||'')+'</b>'+(p.runEnd?' – <b>'+esc(p.runEnd)+'</b>':'')+'</span>'+(np?'<span>🎟️ <b>'+np+'</b> perf'+(np===1?'':'s')+'</span>':'')+(p.status==='On Sale'?'<span>💷 '+priceRange()+'</span>':'')+'</div></div>';
+    }).join('')||'<div class="pill">No productions yet.</div>';
+    document.querySelectorAll('[data-id]').forEach(function(c){c.addEventListener('click',function(){openEdit(c.getAttribute('data-id'));});});
+  }
+  var F=['title','poster','author','genre','status','run','runStart','runEnd','blurb'];
+  function fillPerfs(){ var np=(CUR&&CUR.performances)||[]; el('perfsBox').innerHTML=np.length?('<label style="font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut);font-weight:700">Performances</label>'+np.map(function(pf){return '<div class="pf"><span>'+esc(pf.label||pf.date||'')+'</span><span style="color:var(--mut)">'+esc(pf.id||'')+'</span></div>';}).join('')):''; }
+  function openNew(){ CUR=null; el('mTitle').textContent='New '+NOUN.toLowerCase(); F.forEach(function(k){el('f_'+k).value=k==='status'?'Upcoming':(k==='poster'?'🎭':'');}); el('perfsBox').innerHTML=''; el('delBtn').style.display='none'; el('scrim').classList.add('on'); el('f_title').focus(); }
+  function openEdit(id){ CUR=PRODS.find(function(x){return x.id===id;}); if(!CUR)return; el('mTitle').textContent='Edit '+NOUN.toLowerCase(); F.forEach(function(k){el('f_'+k).value=CUR[k]==null?'':CUR[k];}); fillPerfs(); el('delBtn').style.display=''; el('scrim').classList.add('on'); }
+  function saveIt(){ var rec=CUR?Object.assign({},CUR):{}; F.forEach(function(k){rec[k]=el('f_'+k).value;}); window.HUBDATA.save(COL,rec).then(function(){close2();load();}); }
+  function delIt(){ if(!CUR||!confirm('Delete this '+NOUN.toLowerCase()+'?'))return; window.HUBDATA.del(COL,CUR.id).then(function(){close2();load();}); }
+  function close2(){ el('scrim').classList.remove('on'); }
+  window.openNew=openNew;window.saveIt=saveIt;window.delIt=delIt;window.close2=close2;
+  window.AssistantContext=function(){ return { view:'productions', productions:PRODS.map(function(p){return {title:p.title,author:p.author,genre:p.genre,status:p.status,run:(p.runStart||'')+' to '+(p.runEnd||''),performances:(p.performances||[]).length,blurb:p.blurb};}) }; };
+  load();
+})();
+</script>
+</body>
+</html>

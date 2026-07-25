@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Patrons</title>
+<link rel="icon" href="/logo.svg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="/config.js"></script>
+<style>
+  *{box-sizing:border-box}html,body{margin:0}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--ink,#241d2e);background:var(--paper,#f5f3f7);min-height:100vh}
+  h1,h2,h3{font-family:Georgia,serif;font-weight:800;margin:0}
+  .wrap{max-width:1080px;margin:0 auto;padding:20px 20px 70px}
+  .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}
+  .bar{display:flex;align-items:center;gap:12px;margin:8px 0 16px}.sp{flex:1}
+  .btn{background:linear-gradient(180deg,var(--accent),var(--accent2));color:var(--onAccent);border:none;border-radius:10px;padding:11px 17px;font-weight:700;font-family:Georgia,serif;font-size:14px;cursor:pointer}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:13px;overflow:hidden}
+  th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);padding:11px 13px;border-bottom:1px solid var(--line)}
+  td{padding:12px 13px;border-bottom:1px solid var(--line2);font-size:14px;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr.row{cursor:pointer}tr.row:hover td{background:var(--cream)}
+  .nm{font-weight:700}
+  .type{font-size:10.5px;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:rgba(0,0,0,.06);color:var(--ink2)}
+  .type.t0{background:rgba(106,61,156,.14);color:var(--accent)}.type.t1{background:rgba(176,129,47,.16);color:#8a5f14}.type.t2{background:rgba(63,138,134,.16);color:#2f6a68}.type.t3{background:rgba(0,0,0,.06);color:var(--ink2)}.type.t4{background:rgba(150,70,120,.14);color:#8a3f6e}
+  .ltv{font-family:Georgia,serif;font-weight:800;color:var(--accent)}
+  .mut{color:var(--mut);font-size:12.5px}
+  .scrim{position:fixed;inset:0;background:rgba(20,15,25,.5);z-index:60;display:none;align-items:center;justify-content:center;padding:18px}.scrim.on{display:flex}
+  .modal{background:var(--card);border-radius:16px;max-width:480px;width:100%;padding:20px 22px;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+  .modal h2{color:var(--accent);font-size:20px;margin-bottom:12px}
+  .fld{margin-bottom:9px}.fld label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut);font-weight:700;margin-bottom:4px}
+  .fld input,.fld select,.fld textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 10px;font:inherit;font-size:13.5px;background:var(--paper);color:var(--ink)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .mrow{display:flex;gap:9px;margin-top:14px}
+  .mini{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:10px 14px;font:inherit;font-weight:600;cursor:pointer;color:var(--ink2)}.del{color:#b23b3b;border-color:#e6c0c0}
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent)!important;outline-offset:2px}
+</style>
+</head>
+<body>
+<script src="/hub-nav.js" defer></script>
+<script src="/data.js"></script>
+<script src="/assistant.js" defer></script>
+<div class="wrap">
+  <div class="eyebrow">Amphitheater OS</div>
+  <h1>Patrons</h1>
+  <div class="bar"><span class="mut" id="count"></span><div class="sp"></div><button class="btn" onclick="openNew()">＋ Add patron</button></div>
+  <table><thead><tr><th>Name</th><th>Type</th><th>Contact</th><th>Tickets</th><th>Lifetime value</th></tr></thead><tbody id="rows"></tbody></table>
+</div>
+
+<div class="scrim" id="scrim" onclick="if(event.target===this)close2()"><div class="modal">
+  <h2 id="mTitle">Add patron</h2>
+  <div class="fld"><label>Name</label><input id="f_name"></div>
+  <div class="fld"><label>Type</label><select id="f_type"><option>Subscriber</option><option>Member</option><option>Donor</option><option>Single ticket</option><option>Group</option></select></div>
+  <div class="two"><div class="fld"><label>Email</label><input id="f_email"></div>
+    <div class="fld"><label>Phone</label><input id="f_phone"></div></div>
+  <div class="fld"><label>Notes</label><textarea id="f_notes" style="min-height:52px"></textarea></div>
+  <div class="mrow"><button class="btn" style="flex:1" onclick="saveIt()">Save</button><button class="mini del" id="delBtn" onclick="delIt()">Delete</button><button class="mini" onclick="close2()">Cancel</button></div>
+</div></div>
+
+<script>
+(function(){
+  var el=function(id){return document.getElementById(id);};
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  var money=function(n){n=+n||0;return '$'+Math.round(n).toLocaleString();};
+  var TYPES=['Subscriber','Member','Donor','Single ticket','Group'];
+  var PATRONS=[], SALES=[], CUR=null;
+  var tclass=function(t){var i=TYPES.indexOf(t);return 't'+(i<0?3:i%5);};
+  function stats(name){ var mine=SALES.filter(function(s){return (s.buyer||'')===name;}); return { tickets:mine.reduce(function(s,x){return s+((+x.qty)||((x.seats||[]).length));},0), ltv:mine.reduce(function(s,x){return s+(+x.total||0);},0), orders:mine.length }; }
+
+  function load(){ Promise.all([window.HUBDATA.list('patrons'),window.HUBDATA.list('sales')]).then(function(r){ PATRONS=r[0]||[]; SALES=r[1]||[]; render(); }); }
+  function render(){
+    el('count').textContent=PATRONS.length+' patrons';
+    var rows=PATRONS.map(function(c){return {c:c,s:stats(c.name)};}).sort(function(a,b){return b.s.ltv-a.s.ltv;});
+    el('rows').innerHTML=rows.map(function(o){ var c=o.c,s=o.s;
+      return '<tr class="row" data-id="'+esc(c.id)+'"><td><div class="nm">'+esc(c.name||'—')+'</div>'+(c.notes?'<div class="mut">'+esc(c.notes)+'</div>':'')+'</td>'+
+        '<td><span class="type '+tclass(c.type)+'">'+esc(c.type||'')+'</span></td>'+
+        '<td class="mut">'+esc(c.email||'')+(c.phone?'<br>'+esc(c.phone):'')+'</td>'+
+        '<td>'+(s.tickets?s.tickets+' <span class="mut">('+s.orders+' order'+(s.orders===1?'':'s')+')</span>':'<span class="mut">—</span>')+'</td>'+
+        '<td class="ltv">'+(s.ltv?money(s.ltv):'—')+'</td></tr>';
+    }).join('')||'<tr><td colspan="5" class="mut" style="padding:16px">No patrons yet.</td></tr>';
+    document.querySelectorAll('[data-id]').forEach(function(r){r.addEventListener('click',function(){openEdit(r.getAttribute('data-id'));});});
+  }
+  var F=['name','type','email','phone','notes'];
+  function openNew(){ CUR=null; el('mTitle').textContent='Add patron'; F.forEach(function(k){el('f_'+k).value=k==='type'?'Single ticket':'';}); el('delBtn').style.display='none'; el('scrim').classList.add('on'); el('f_name').focus(); }
+  function openEdit(id){ CUR=PATRONS.find(function(x){return x.id===id;}); if(!CUR)return; el('mTitle').textContent='Edit patron'; F.forEach(function(k){el('f_'+k).value=CUR[k]==null?'':CUR[k];}); el('delBtn').style.display=''; el('scrim').classList.add('on'); }
+  function saveIt(){ var rec=CUR?Object.assign({},CUR):{}; F.forEach(function(k){rec[k]=el('f_'+k).value;}); window.HUBDATA.save('patrons',rec).then(function(){close2();load();}); }
+  function delIt(){ if(!CUR||!confirm('Delete this patron?'))return; window.HUBDATA.del('patrons',CUR.id).then(function(){close2();load();}); }
+  function close2(){ el('scrim').classList.remove('on'); }
+  window.openNew=openNew;window.saveIt=saveIt;window.delIt=delIt;window.close2=close2;
+  window.AssistantContext=function(){ return { view:'patrons', patrons:PATRONS.map(function(c){var s=stats(c.name);return {name:c.name,type:c.type,tickets:s.tickets,lifetimeValue:s.ltv,notes:c.notes};}) }; };
+  load();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Log</title>
+<link rel="icon" href="/logo.svg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="/config.js"></script>
+<style>
+  *{box-sizing:border-box}html,body{margin:0}
+  body{font-family:Inter,system-ui,sans-serif;color:var(--ink,#1d1a16);background:var(--paper,#f4f1ea);min-height:100vh}
+  h1,h2,h3{font-family:Georgia,serif;font-weight:800;margin:0}
+  .wrap{max-width:1120px;margin:0 auto;padding:20px 20px 70px}
+  .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}
+  .bar{display:flex;align-items:center;gap:12px;margin:8px 0 16px;flex-wrap:wrap}.sp{flex:1}
+  .pill{font-size:12.5px;color:var(--ink2);background:var(--card);border:1px solid var(--line);border-radius:99px;padding:7px 13px}.pill b{color:var(--accent)}
+  .pill.warn{background:#fbf4e9;border-color:#e6d3ad;color:#8a5f14}.pill.warn b{color:#a9741a}
+  .btn{background:linear-gradient(180deg,var(--accent),var(--accent2));color:var(--onAccent);border:none;border-radius:10px;padding:11px 17px;font-weight:700;font-family:Georgia,serif;font-size:14px;cursor:pointer}
+  table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:13px;overflow:hidden}
+  th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);padding:11px 13px;border-bottom:1px solid var(--line)}
+  td{padding:12px 13px;border-bottom:1px solid var(--line2);font-size:14px;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  tr.row{cursor:pointer}tr.row:hover td{background:var(--cream)}
+  .sub{font-weight:700}
+  .ty{font-size:10.5px;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:99px;background:rgba(0,0,0,.06);color:var(--ink2)}
+  .stt{font-size:10.5px;font-weight:700;text-transform:uppercase;padding:2px 8px;border-radius:99px;letter-spacing:.03em}
+  .stt.o{background:#fbf4e9;color:#a9741a}.stt.r{background:#e9f0f8;color:#a8762c}.stt.g{background:#eef6f0;color:#2f6a52}.stt.x{background:#fbecec;color:#b23b3b}.stt.c{background:rgba(0,0,0,.06);color:var(--mut)}
+  .due{font-size:12.5px}.due.over{color:#b23b3b;font-weight:700}
+  .mut{color:var(--mut)}
+  .scrim{position:fixed;inset:0;background:rgba(20,25,30,.5);z-index:60;display:none;align-items:center;justify-content:center;padding:18px}.scrim.on{display:flex}
+  .modal{background:var(--card);border-radius:16px;max-width:520px;width:100%;max-height:90vh;overflow:auto;padding:20px 22px;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+  .modal h2{color:var(--accent);font-size:20px;margin-bottom:12px}
+  .fld{margin-bottom:9px}.fld label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut);font-weight:700;margin-bottom:4px}
+  .fld input,.fld select,.fld textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 10px;font:inherit;font-size:13.5px;background:var(--paper);color:var(--ink)}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .mrow{display:flex;gap:9px;margin-top:14px}
+  .mini{background:var(--card);border:1px solid var(--line);border-radius:9px;padding:10px 14px;font:inherit;font-weight:600;cursor:pointer;color:var(--ink2)}.del{color:#b23b3b;border-color:#e6c0c0}
+  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--accent)!important;outline-offset:2px}
+</style>
+</head>
+<body>
+<script src="/hub-nav.js" defer></script>
+<script src="/data.js"></script>
+<script src="/assistant.js" defer></script>
+<div class="wrap">
+  <div class="eyebrow" id="eb"></div>
+  <h1 id="h1">Log</h1>
+  <div class="bar">
+    <span class="pill"><b id="pOpen">—</b> open</span>
+    <span class="pill warn"><b id="pOver">—</b> overdue</span>
+    <div class="sp"></div>
+    <button class="btn" id="newBtn" onclick="openNew()">＋ New</button>
+  </div>
+  <table><thead><tr><th id="thSub">Item</th><th id="thProj">Project</th><th>Type</th><th id="thParty">Ball in court</th><th>Status</th><th>Due</th></tr></thead><tbody id="rows"></tbody></table>
+</div>
+
+<div class="scrim" id="scrim" onclick="if(event.target===this)close2()"><div class="modal">
+  <h2 id="mTitle">New item</h2>
+  <div class="fld"><label>Subject</label><input id="f_subject" placeholder="Short description"></div>
+  <div class="two"><div class="fld"><label id="lbProj">Project</label><input id="f_project" list="projList"><datalist id="projList"></datalist></div>
+    <div class="fld"><label>Type</label><select id="f_type"></select></div></div>
+  <div class="two"><div class="fld"><label id="partyLbl">Ball in court</label><select id="f_party"></select></div>
+    <div class="fld"><label>Status</label><select id="f_status"></select></div></div>
+  <div class="fld"><label>Due date</label><input id="f_due" type="date"></div>
+  <div class="fld"><label>Notes</label><textarea id="f_notes" style="min-height:52px"></textarea></div>
+  <div class="mrow"><button class="btn" style="flex:1" onclick="saveIt()">Save</button><button class="mini del" id="delBtn" onclick="delIt()">Delete</button><button class="mini" onclick="close2()">Cancel</button></div>
+</div></div>
+
+<script>
+(function(){
+  var el=function(id){return document.getElementById(id);};
+  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
+  var C=window.HUB_CONFIG||{}, BR=C.brand||{}, T=C.tracker||{};
+  var PROJLBL=T.projectLabel||C.projectNoun||'Project'; document.getElementById('thProj').textContent=PROJLBL; document.getElementById('lbProj').textContent=PROJLBL;
+  var LABEL=T.label||'Log', TYPES=T.types||['Item'], STATUSES=T.statuses||['Open','Closed'], PARTIES=T.parties||['Team'], NOUN=T.noun||'item';
+  var ITEMS=[], CUR=null;
+  el('eb').textContent=BR.name||''; el('h1').textContent=LABEL; document.title=(BR.name||'OS')+' · '+LABEL; el('newBtn').textContent='＋ New '+NOUN;
+  el('thSub').textContent=(T.subjectLabel||'Item'); if(T.partyLabel){el('thParty').textContent=T.partyLabel;el('partyLbl').textContent=T.partyLabel;}
+  el('f_type').innerHTML=TYPES.map(function(s){return '<option>'+esc(s)+'</option>';}).join('');
+  el('f_status').innerHTML=STATUSES.map(function(s){return '<option>'+esc(s)+'</option>';}).join('');
+  el('f_party').innerHTML=PARTIES.map(function(s){return '<option>'+esc(s)+'</option>';}).join('');
+  window.HUBDATA.list((C.spineCollection||'projects')).then(function(a){ el('projList').innerHTML=(a||[]).map(function(x){return '<option value="'+esc(x.name||x.title)+'">';}).join(''); });
+
+  function statusClass(s){ s=String(s||'').toLowerCase(); if(/reject|fail|deni/.test(s))return 'x'; if(/open|new/.test(s))return 'o'; if(/review|pending|submit/.test(s))return 'r'; if(/answer|approv|complete|done|issued/.test(s))return 'g'; if(/closed/.test(s))return 'c'; return 'c'; }
+  function isOpen(s){ return !/closed|answer|approv|complete|done|reject|issued/i.test(String(s||'')); }
+  function daysTo(d){ if(!d)return null; return Math.round((new Date(d+'T00:00:00')-new Date())/86400000); }
+
+  function load(){ window.HUBDATA.list('tracker').then(function(a){ ITEMS=a||[]; render(); }); }
+  function render(){
+    var open=ITEMS.filter(function(t){return isOpen(t.status);});
+    el('pOpen').textContent=open.length;
+    el('pOver').textContent=open.filter(function(t){var d=daysTo(t.due);return d!=null&&d<0;}).length;
+    var sorted=ITEMS.slice().sort(function(a,b){ var ao=isOpen(a.status)?0:1, bo=isOpen(b.status)?0:1; if(ao!==bo)return ao-bo; return (a.due||'~').localeCompare(b.due||'~'); });
+    el('rows').innerHTML=sorted.map(function(t){
+      var d=daysTo(t.due), over=(d!=null&&d<0&&isOpen(t.status));
+      return '<tr class="row" data-id="'+esc(t.id)+'"><td><div class="sub">'+esc(t.subject||'—')+'</div>'+(t.notes?'<div class="mut" style="font-size:11.5px">'+esc(t.notes)+'</div>':'')+'</td>'+
+        '<td class="mut">'+esc(t.project||'')+'</td>'+
+        '<td><span class="ty">'+esc(t.type||'')+'</span></td>'+
+        '<td class="mut">'+esc(t.party||'')+'</td>'+
+        '<td><span class="stt '+statusClass(t.status)+'">'+esc(t.status||'')+'</span></td>'+
+        '<td><span class="due'+(over?' over':'')+'">'+(t.due?esc(t.due):'—')+(over?' · late':'')+'</span></td></tr>';
+    }).join('')||'<tr><td colspan="6" class="mut" style="padding:16px">Nothing logged yet.</td></tr>';
+    document.querySelectorAll('[data-id]').forEach(function(r){r.addEventListener('click',function(){openEdit(r.getAttribute('data-id'));});});
+  }
+  var F=['subject','project','type','party','status','due','notes'];
+  function openNew(){ CUR=null; el('mTitle').textContent='New '+NOUN; F.forEach(function(k){var e=el('f_'+k); e.value=k==='type'?TYPES[0]:(k==='status'?STATUSES[0]:(k==='party'?PARTIES[0]:''));}); el('delBtn').style.display='none'; el('scrim').classList.add('on'); el('f_subject').focus(); }
+  function openEdit(id){ CUR=ITEMS.find(function(x){return x.id===id;}); if(!CUR)return; el('mTitle').textContent='Edit '+NOUN; F.forEach(function(k){el('f_'+k).value=CUR[k]==null?'':CUR[k];}); el('delBtn').style.display=''; el('scrim').classList.add('on'); }
+  function saveIt(){ var rec=CUR?Object.assign({},CUR):{}; F.forEach(function(k){rec[k]=el('f_'+k).value;}); window.HUBDATA.save('tracker',rec).then(function(){close2();load();}); }
+  function delIt(){ if(!CUR||!confirm('Delete this '+NOUN+'?'))return; window.HUBDATA.del('tracker',CUR.id).then(function(){close2();load();}); }
+  function close2(){ el('scrim').classList.remove('on'); }
+  window.openNew=openNew;window.saveIt=saveIt;window.delIt=delIt;window.close2=close2;
+
+  window.AssistantContext=function(){ return { view:LABEL, open:ITEMS.filter(function(t){return isOpen(t.status);}).length,
+    items:ITEMS.slice(0,30).map(function(t){return {subject:t.subject,project:t.project,type:t.type,ballInCourt:t.party,status:t.status,due:t.due,notes:t.notes};}) }; };
+  load();
+})();
+</script>
+</body>
+</html>
