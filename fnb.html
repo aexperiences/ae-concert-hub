@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Front of House & F&B · Amphitheater OS</title><link rel="icon" href="https://www.aexperiences.com/Amphitheater_OS.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="amph.css"></head><body>
+<script src="amph.js"></script>
+<script>
+(function () {
+  var E = window.Amph, c = E.mount({ active:"fnb.html", crumb:"Front of House & F&B" }), d = E.db();
+  c.appendChild(E.page("Front of House & F&B","The room on the night. The bar and concessions, the per-cap, and the house crew. The per-cap on a full house is real money that never touches the artist deal — it's the venue's, on top of the door."));
+
+  var onsale = d.shows.filter(function(s){return s.onSale && !s.settled;});
+  var lo=E.BENCH.perCap.target[0], hi=E.BENCH.perCap.target[1], mid=E.BENCH.perCap.median;
+  c.appendChild(E.card('<h2>Bar & concessions projection</h2><div class="card-sub">Per-cap band $'+lo+'–$'+hi+' — applied to the paid count. This revenue is the venue\'s, on top of the settlement.</div>'+
+    '<table><thead><tr><th>Show</th><th>Paid count</th><th style="text-align:right">Bar @ $'+lo+'</th><th style="text-align:right">Bar @ $'+mid+'</th><th style="text-align:right">Bar @ $'+hi+'</th></tr></thead><tbody>'+
+    onsale.map(function(s){ var n=E.soldTickets(s);
+      return '<tr><td><div class="t-main">'+E.esc(s.artist)+'</div><div class="t-sub">'+E.esc(s.genre)+'</div></td><td class="mono">'+n+'</td>'+
+      '<td style="text-align:right" class="mono">'+E.money(n*lo)+'</td><td style="text-align:right" class="mono"><b>'+E.money(n*mid)+'</b></td><td style="text-align:right" class="mono">'+E.money(n*hi)+'</td></tr>'; }).join("")+'</tbody></table>'+E.srcNote(E.BENCH.perCap.src)));
+
+  c.appendChild(E.card('<div class="between"><div><h2>House staffing by show</h2><div class="card-sub">Right-sized to the count — a seated comedy 600 doesn\'t need a rock-show door.</div></div><div>'+E.tag("occupancy watch","watch")+'</div></div>'+
+    '<table><thead><tr><th>Show</th><th>Count</th><th>Bartenders</th><th>Door / security</th><th>Runners</th></tr></thead><tbody>'+
+    onsale.map(function(s){ var n=E.soldTickets(s); var bar=Math.max(2,Math.round(n/120)), sec=Math.max(2,Math.round(n/150)), run=Math.max(1,Math.round(n/300));
+      return '<tr><td class="t-main">'+E.esc(s.artist)+'</td><td class="mono">'+n+'</td><td class="mono">'+bar+'</td><td class="mono">'+sec+'</td><td class="mono">'+run+'</td></tr>'; }).join("")+'</tbody></table>'+
+    '<div class="fence" style="margin-top:12px"><b>Occupancy is a fence.</b> A full GA plus staff can\'t exceed the posted number under the liquor license — that\'s the fire-marshal count, not the ticket cap. Law flags it. <a href="law.html">See the matter →</a></div>'));
+})();
+</script></body></html>

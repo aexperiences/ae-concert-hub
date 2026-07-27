@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Marketing & Members · Amphitheater OS</title><link rel="icon" href="https://www.aexperiences.com/Amphitheater_OS.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="amph.css"></head><body>
+<script src="amph.js"></script>
+<script>
+(function () {
+  var E = window.Amph, c = E.mount({ active:"marketing.html", crumb:"Marketing & Members" }), d = E.db();
+  c.appendChild(E.page("Marketing & Members","On-sales and presales, the member push, and the announce calendar. Every marketing dollar is a line in that show's settlement — it comes off the top before the split — so the job is filling the room without eating the margin."));
+
+  var onsale = d.shows.filter(function(s){return s.onSale;});
+  c.appendChild(E.card('<div class="between"><div><h2>Marketing spend vs. the door</h2><div class="card-sub">The ad line as a share of gross box office — watch the shows where it\'s running hot.</div></div><div>'+E.tag("margin watch","watch")+'</div></div>'+
+    '<table><thead><tr><th>Show</th><th style="text-align:right">Marketing</th><th style="text-align:right">Gross BO</th><th style="width:150px">% of gross</th></tr></thead><tbody>'+
+    onsale.map(function(s){ var g=E.grossBoxOffice(s), m=s.expenses.mkt, pctv=g?(m/g*100):0;
+      return '<tr><td><div class="t-main">'+E.esc(s.artist)+'</div><div class="t-sub">'+E.pct(E.sellThrough(s))+' sold</div></td>'+
+      '<td style="text-align:right" class="mono">'+E.money(m)+'</td><td style="text-align:right" class="mono">'+E.money(g)+'</td>'+
+      '<td class="fillcell"><span class="mono small">'+pctv.toFixed(1)+'%</span><div class="bar '+(pctv>12?"":"good")+'"><i style="width:'+Math.min(100,pctv*4)+'%"></i></div></td></tr>'; }).join("")+'</tbody></table>'+
+    '<div class="fence" style="margin-top:12px"><b>Pull back where it\'s not converting.</b> Marlowe\'s ad line is outrunning that show\'s margin — the org flags it and recommends shifting spend to the Ember Coast presale, which is already pacing to sell out.</div>'));
+
+  var announce = [["Aug 9","The Ember Coast","On sale — final GA push"],["Aug 16","Marlowe & the Tides","On sale — reallocate ad spend"],["Aug 23","Nova Sol (DJ set)","Announced — on-sale BLOCKED until booked"],["Aug 30","Comedy — Dave Rourke","On sale — steady"],["Sept 20","Aurora Fields","Hold — offer staged on the desk"]];
+  c.appendChild(E.card('<h2>Announce calendar</h2><div class="card-sub">Members get the presale window first; the general on-sale follows. A blocked show never gets announced to the public.</div>'+
+    '<table><thead><tr><th style="width:90px">Date</th><th>Show</th><th>State</th></tr></thead><tbody>'+
+    announce.map(function(r){return '<tr><td class="mono small">'+E.esc(r[0])+'</td><td class="t-main">'+E.esc(r[1])+'</td><td>'+E.esc(r[2])+'</td></tr>';}).join("")+'</tbody></table>'));
+})();
+</script></body></html>

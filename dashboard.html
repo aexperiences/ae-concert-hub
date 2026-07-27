@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Command Center · Amphitheater OS</title><link rel="icon" href="https://www.aexperiences.com/Amphitheater_OS.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="amph.css"></head><body>
+<script src="amph.js"></script>
+<script>
+(function () {
+  var E = window.Amph, c = E.mount({ active:"dashboard.html", crumb:"Command Center" }), d = E.db();
+  c.appendChild(E.page("Command Center","The whole room on one sheet. Every number below is computed from this OS's own shows — the box office, the deals and the expenses — not typed in and not rebuilt at 1am."));
+
+  /* signature row: venue net, sell-through, blocked on-sale, unsettled */
+  var net = E.totalVenueNet(d), st = E.avgSellThrough(d), blocked = E.blockedOnSale(d), uns = E.unsettled(d);
+  c.appendChild(E.card(
+    '<h2>The slate, by the numbers</h2><div class="card-sub">Gross box office minus taxes, fees, expenses and the artist deal — the venue net is the business.</div>'+
+    '<div class="statrow">'+
+      E.stat("Projected venue net", E.money(net), "across every on-sale show", net>0?"good":"bad")+
+      E.stat("Avg sell-through", E.pct(st), "target "+E.BENCH.sellThrough.target[0]+"–"+E.BENCH.sellThrough.target[1]+"%", st>=E.BENCH.sellThrough.target[0]?"good":"watch")+
+      E.stat("Blocked from on-sale", blocked.length, blocked.length?blocked.map(function(s){return s.artist.split(" ")[0];}).join(", "):"none", blocked.length?"bad":"good")+
+      E.stat("Awaiting settlement", uns.length, "on-sale, not yet settled", uns.length?"watch":"good")+
+      E.stat("Shows on the books", d.shows.length, "confirmed + announced", "mag")+
+    '</div>'+E.srcNote(E.BENCH.sellThrough.src)
+  ));
+
+  /* the rights-gate: what's blocked from on-sale */
+  c.appendChild(E.card(
+    '<div class="between"><div><h2>The on-sale rights-gate</h2><div class="card-sub">No show goes on sale until its contract is signed and its deposit is in. Selling a date you can\'t fulfill is a refund event, not a marketing win.</div></div>'+
+    '<div>'+E.tag(blocked.length+" blocked", blocked.length?"crim":"good")+'</div></div>'+
+    (blocked.length ?
+      '<table><thead><tr><th>Show</th><th style="width:130px">Contract</th><th style="width:130px">Deposit</th><th>On sale</th></tr></thead><tbody>'+
+      blocked.map(function(s){
+        return '<tr><td><div class="t-main">'+E.esc(s.artist)+'</div><div class="t-sub">'+E.esc(s.date)+' · '+E.esc(s.genre)+'</div></td>'+
+        '<td>'+(s.contractSigned?'<span class="chip clear">✓ signed</span>':'<span class="chip hold">✗ unsigned</span>')+'</td>'+
+        '<td>'+(s.depositReceived?'<span class="chip clear">✓ in</span>':'<span class="chip hold">✗ not in</span>')+'</td>'+
+        '<td><span class="chip hold">✗ blocked</span></td></tr>'; }).join("")+'</tbody></table>'
+      : '<div class="empty">Every announced show is fully booked and clear to go on sale.</div>')+
+    '<div class="fence crim" style="margin-top:12px"><b>Nova Sol is announced but unbooked</b> — the contract isn\'t signed and the deposit isn\'t in. Marketing wants the on-sale live today; the gate holds it. <a href="deals.html">Work the deal →</a></div>'
+  ));
+
+  /* per-show P&L snapshot */
+  c.appendChild(E.card(
+    '<div class="between"><div><h2>Per-show P&amp;L</h2><div class="card-sub">Gross box office, the deal, and the venue net — the whole night in one row, computed live.</div></div><div>'+E.tag("live math", "mag")+'</div></div>'+
+    '<table><thead><tr><th>Show</th><th>Deal</th><th style="text-align:right">Gross BO</th><th style="text-align:right">Artist cut</th><th style="text-align:right">Venue net</th><th>Status</th></tr></thead><tbody>'+
+    d.shows.map(function(s){ var g=E.grossBoxOffice(s), ac=E.artistCut(s), vn=E.venueNet(s);
+      var dealLabel = s.deal.type==="guarantee"?("$"+s.deal.guarantee.toLocaleString()+" gtd"):(s.deal.type==="door"?(s.deal.artistPct+"% door"):("$"+s.deal.guarantee.toLocaleString()+" vs "+s.deal.splitPct+"%"));
+      return '<tr><td><div class="t-main">'+E.esc(s.artist)+'</div><div class="t-sub">'+E.esc(s.date)+' · '+E.pct(E.sellThrough(s))+' sold</div></td>'+
+      '<td><span class="mono small">'+E.esc(dealLabel)+'</span></td>'+
+      '<td style="text-align:right" class="mono">'+E.money(g)+'</td>'+
+      '<td style="text-align:right" class="mono">'+E.money(ac)+'</td>'+
+      '<td style="text-align:right" class="mono"><b style="color:'+(vn>0?'var(--good)':'var(--bad)')+'">'+E.money(vn)+'</b></td>'+
+      '<td>'+E.tag(s.status, s.settled?"good":(s.onSale?"mag":"ghost"))+'</td></tr>'; }).join("")+'</tbody></table>'+
+    '<div class="fence" style="margin-top:12px"><b>Settle the closed shows.</b> Harbor Lights sold out and wrapped — its settlement sheet is one click away. <a href="settlement.html">Open Settlement →</a></div>'
+  ));
+
+  /* pending fences */
+  var pend = E.approvals().filter(function(a){return a.state==="Pending";});
+  c.appendChild(E.card('<div class="between"><div><h2>On the Approval Desk</h2><div class="card-sub">Ghost Mode — the org clears what it can; only fences (an on-sale, a settlement, a spend, an offer) reach you.</div></div><div>'+E.tag(pend.length+" pending", pend.length?"watch":"good")+'</div></div>'+
+    '<div class="stack">'+pend.map(function(a){return '<div class="fence'+(a.kind==="onsale"||a.kind==="settle"?" crim":"")+'"><b>'+E.esc(a.title)+'</b><br><span class="small">'+E.esc(a.summary)+'</span></div>';}).join("")+'</div>'+
+    '<div class="row" style="margin-top:12px"><a class="btn gold sm" href="approvals.html">Open the Approval Desk →</a></div>'));
+})();
+</script></body></html>

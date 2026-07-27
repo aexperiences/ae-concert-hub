@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Staffing · Amphitheater OS</title><link rel="icon" href="https://www.aexperiences.com/Amphitheater_OS.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="amph.css"></head><body>
+<script src="amph.js"></script>
+<script>
+(function () {
+  var E = window.Amph, c = E.mount({ active:"hr.html", crumb:"Staffing" }), d = E.db();
+  c.appendChild(E.page("Staffing","The core team and the per-show crew — bartenders, door, security, box office and runners, called to the count. A termination or a security incident always routes to a human; the org staffs, it doesn't fire."));
+
+  c.appendChild(E.card('<h2>Core team</h2><div class="card-sub">The people and the AI seats that run the room.</div>'+
+    '<table><thead><tr><th>Name</th><th>Role</th><th>Type</th><th>Where</th></tr></thead><tbody>'+
+    d.team.map(function(m){return '<tr><td class="t-main">'+E.esc(m.name)+'</td><td>'+E.esc(m.role)+'</td><td>'+E.tag(m.type, m.type.indexOf("AI")>=0?"mag":"ghost")+'</td><td>'+E.esc(m.dept)+'</td></tr>';}).join("")+'</tbody></table>'));
+
+  var onsale = d.shows.filter(function(s){return s.onSale && !s.settled;});
+  c.appendChild(E.card('<h2>Crew call by show</h2><div class="card-sub">Sized to the paid count. Every post filled is a safety line as much as a labor line.</div>'+
+    '<table><thead><tr><th>Show</th><th>Count</th><th>Box office</th><th>Bar</th><th>Door/security</th><th>Total crew</th></tr></thead><tbody>'+
+    onsale.map(function(s){ var n=E.soldTickets(s), bo=2, bar=Math.max(2,Math.round(n/120)), sec=Math.max(2,Math.round(n/150)); var tot=bo+bar+sec+3;
+      return '<tr><td class="t-main">'+E.esc(s.artist)+'</td><td class="mono">'+n+'</td><td class="mono">'+bo+'</td><td class="mono">'+bar+'</td><td class="mono">'+sec+'</td><td class="mono"><b>'+tot+'</b></td></tr>'; }).join("")+'</tbody></table>'+
+    '<div class="fence" style="margin-top:12px"><b>Firing is a fence.</b> The org schedules, checks people in and flags an understaffed door — but a termination goes to the owner, never the software.</div>'));
+})();
+</script></body></html>

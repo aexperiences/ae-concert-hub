@@ -1,329 +1,39 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
-<title>Box Office</title>
-<link rel="icon" href="/logo.svg">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="/config.js"></script>
-<style>
-  *{box-sizing:border-box}html,body{margin:0}
-  body{font-family:Inter,system-ui,sans-serif;color:var(--ink,#241d2e);background:var(--paper,#f5f3f7);min-height:100vh}
-  h1,h2,h3{font-family:Georgia,serif;font-weight:800;margin:0}
-  .wrap{max-width:1240px;margin:0 auto;padding:20px 20px 70px}
-  .eyebrow{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}
-  .top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:6px 0 12px}
-  .top .sp{flex:1}
-  .top label{font-size:12.5px;color:var(--mut)}
-  .top select{border:1px solid var(--line);border-radius:10px;padding:10px 12px;font:inherit;font-size:14px;background:var(--card);color:var(--ink);min-width:300px}
-  .now{font-size:12.5px;color:var(--mut)}.now b{color:var(--ink);font-family:Georgia,serif}
-  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}
-  .kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:11px 13px}
-  .kpi .n{font-family:Georgia,serif;font-weight:800;font-size:20px;color:var(--accent)}
-  .kpi .l{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
-  .grid{display:grid;grid-template-columns:1fr 336px;gap:16px;align-items:start}
-  @media(max-width:940px){.grid{grid-template-columns:1fr}}
-  .stage-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
-  .house-name{font-size:12px;color:var(--mut);text-align:center;margin-bottom:8px}.house-name b{color:var(--ink2)}
-  .legend{display:flex;gap:13px;flex-wrap:wrap;justify-content:center;margin-top:12px;font-size:11.5px;color:var(--ink2)}
-  .legend span{display:inline-flex;align-items:center;gap:6px}
-  .dot{width:13px;height:13px;border-radius:50%;display:inline-block}
-  .side{display:flex;flex-direction:column;gap:14px;position:sticky;top:74px}
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px}
-  .panel h3{font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--mut);margin-bottom:10px;display:flex;align-items:center;gap:8px}
-  .hold{margin-left:auto;font-size:12px;font-weight:700;color:var(--accent);font-family:Georgia,serif}.hold.warn{color:#b23b3b}
-  .tools{display:flex;gap:8px;align-items:center;margin-bottom:10px}
-  .tools input[type=number]{width:52px;border:1px solid var(--line);border-radius:8px;padding:7px;font:inherit;background:var(--paper);color:var(--ink)}
-  .ghost{border:1px solid var(--line);background:var(--card);border-radius:9px;padding:8px 11px;font:inherit;font-weight:600;cursor:pointer;color:var(--ink2);font-size:12.5px}
-  .ghost:hover{background:var(--cream)}
-  .cart{display:flex;flex-direction:column;gap:5px;max-height:210px;overflow:auto}
-  .crow{display:flex;align-items:center;gap:8px;font-size:13px;border-bottom:1px dotted var(--line);padding:5px 0}
-  .crow .s{font-weight:700}.crow .t{color:var(--mut);font-size:11.5px}.crow .p{margin-left:auto;font-weight:700}
-  .crow .x{cursor:pointer;color:#b23b3b;border:none;background:none;font-size:15px}
-  .empty{color:var(--mut);font-size:13px;padding:6px 0}
-  .tot{display:flex;justify-content:space-between;align-items:baseline;margin:10px 0 4px}
-  .tot .g{font-family:Georgia,serif;font-weight:800;font-size:22px;color:var(--accent)}
-  .fld{margin:8px 0}.fld label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.4px;color:var(--mut);font-weight:700;margin-bottom:4px}
-  .fld input,.fld select{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 10px;font:inherit;font-size:13.5px;background:var(--paper);color:var(--ink)}
-  .comp{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);margin:6px 0}
-  .btn{width:100%;background:linear-gradient(180deg,var(--accent),var(--accent2));color:var(--onAccent);border:none;border-radius:11px;padding:12px;font-weight:700;font-family:Georgia,serif;font-size:15px;cursor:pointer;margin-top:6px}
-  .btn:disabled{opacity:.5;cursor:default}
-  .stub{font-size:11px;color:var(--mut);text-align:center;margin-top:8px;line-height:1.5}
-  .srow{display:flex;gap:8px;font-size:12.5px;border-bottom:1px dotted var(--line);padding:6px 0}
-  .srow .b{font-weight:600}.srow .m{color:var(--mut)}.srow .p{margin-left:auto;font-weight:700;color:var(--accent)}
-  /* GA */
-  .meter{height:20px;border-radius:99px;background:var(--line2);overflow:hidden;margin:4px 0 6px}
-  .meter i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2))}
-  .step{display:flex;align-items:center;gap:10px}
-  .step button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-size:20px;cursor:pointer;color:var(--ink)}
-  .step .q{font-family:Georgia,serif;font-weight:800;font-size:24px;min-width:40px;text-align:center}
-  /* receipt */
-  .scrim{position:fixed;inset:0;background:rgba(20,15,25,.55);z-index:70;display:none;align-items:center;justify-content:center;padding:18px}.scrim.on{display:flex}
-  .receipt{background:var(--card);border-radius:16px;max-width:380px;width:100%;padding:22px;box-shadow:0 24px 60px rgba(0,0,0,.35);text-align:center}
-  .receipt .ck{font-size:40px}
-  .receipt h2{color:var(--accent);font-size:21px;margin:6px 0 2px}
-  .receipt .conf{font-size:12px;color:var(--mut);letter-spacing:.1em}
-  .receipt .body{text-align:left;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);margin:14px 0;padding:12px 0;font-size:13.5px}
-  .receipt .body .r{display:flex;justify-content:space-between;padding:3px 0}
-  .receipt .body .r b{font-weight:700}
-  .receipt .seats{color:var(--ink2);font-size:12.5px;margin-top:6px}
-  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:11px;font-size:14px;box-shadow:0 12px 30px rgba(0,0,0,.3);opacity:0;transition:.25s;pointer-events:none;z-index:80}
-  .toast.on{opacity:1}
-  a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent)!important;outline-offset:2px}
-</style>
-</head>
-<body>
-<script src="/hub-nav.js" defer></script>
-<script src="/data.js"></script>
-<script src="/assistant.js" defer></script>
-<div class="wrap">
-  <div class="eyebrow" id="eb">Box Office</div>
-  <div class="top">
-    <label for="perfSel">Selling:</label><select id="perfSel"></select>
-    <div class="sp"></div>
-    <div class="now" id="nowShow"></div>
-  </div>
-  <div class="kpis">
-    <div class="kpi"><div class="n" id="kSold">—</div><div class="l">Sold</div></div>
-    <div class="kpi"><div class="n" id="kPct">—</div><div class="l">Capacity</div></div>
-    <div class="kpi"><div class="n" id="kGross">—</div><div class="l">Gross (this perf)</div></div>
-    <div class="kpi"><div class="n" id="kAvail">—</div><div class="l">Available</div></div>
-  </div>
-  <div class="grid">
-    <div class="stage-card">
-      <div class="house-name" id="houseName"></div>
-      <div id="mapWrap"></div>
-      <div class="legend" id="legend"></div>
-    </div>
-    <div class="side">
-      <div class="panel">
-        <h3>Order <span class="hold" id="holdTimer"></span></h3>
-        <div class="tools" id="tools"></div>
-        <div id="cartArea"></div>
-        <div class="tot"><span style="color:var(--mut);font-size:12px">Subtotal (<span id="cCount">0</span>)</span><span class="g" id="cTotal">$0</span></div>
-        <div class="fld"><label>Patron (optional)</label><input id="buyer" list="patronList" placeholder="Name or walk-up"><datalist id="patronList"></datalist></div>
-        <label class="comp"><input type="checkbox" id="comp"> Comp — no charge</label>
-        <div class="fld"><label>Tender</label><select id="tender"><option>Card</option><option>Cash</option><option>Subscriber</option><option>Comp</option><option>Invoice</option></select></div>
-        <button class="btn" id="sellBtn" onclick="completeSale()" disabled>Complete sale</button>
-        <div class="stub">Payments are stubbed in this demo — no card is charged.</div>
-      </div>
-      <div class="panel">
-        <h3>Recent sales · this performance</h3>
-        <div id="recent"><div class="empty">No sales yet.</div></div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="scrim" id="rcpScrim" onclick="if(event.target===this)closeRcp()"><div class="receipt">
-  <div class="ck">🎟️</div><h2>Sale complete</h2><div class="conf" id="rConf"></div>
-  <div class="body" id="rBody"></div>
-  <div style="display:flex;gap:9px"><button class="btn" style="margin:0" onclick="closeRcp()">Done</button></div>
-</div></div>
-<div class="toast" id="toast"></div>
-
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Box Office · Amphitheater OS</title><link rel="icon" href="https://www.aexperiences.com/Amphitheater_OS.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="amph.css"></head><body>
+<script src="amph.js"></script>
 <script>
-(function(){
-  var el=function(id){return document.getElementById(id);};
-  var esc=function(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});};
-  var money=function(n){n=+n||0;return '$'+Math.round(n).toLocaleString();};
-  var r1=function(n){return Math.round(n*10)/10;};
-  var C=window.HUB_CONFIG||{}, BR=C.brand||{}, BO=C.boxOffice||{}, VENUES=C.venues||{}, DEFV=C.defaultVenue||Object.keys(VENUES)[0];
-  var HOLD_MIN=+BO.holdMinutes||8, GOLD=(C.skin&&C.skin.gold)||'#cf9b34';
-  var MYID=(function(){ try{var v=localStorage.getItem('bo_clerk'); if(!v){v='clerk-'+Math.random().toString(36).slice(2,7); localStorage.setItem('bo_clerk',v);} return v;}catch(e){return 'clerk-x';} })();
-  el('eb').textContent=(BR.name||'OS')+' · Front of House';
+(function () {
+  var E = window.Amph, c = E.mount({ active:"boxoffice.html", crumb:"Box Office" }), d = E.db();
+  c.appendChild(E.page("Box Office & Ticketing","The count, tier by tier. GA, reserved and cabaret, holds and comps, sell-through and the walk-up estimate — the manifest that the settlement is cut from. On-sale shows only; a blocked show has no manifest because it can't sell.",
+    '<span class="tag mag">live manifest</span>'));
 
-  var EVENTS=[], PATRONS=[], SALES=[], SEEDHOLDS=[], PERFS=[], curPerf=null, venue=null, mode='reserved';
-  var SEATS=[], SEATIX={}, REMOVED={}, TIERS={}, CAP=0, sold={}, soldQty=0, heldOther={}, mine={}, gaQty=0, gaTier=null, holdUntil=0, ticker=null, pollTimer=null;
+  var onsale = d.shows.filter(function(s){return s.onSale;});
+  c.appendChild(E.card('<h2>House at a glance</h2><div class="card-sub">Across every on-sale show.</div>'+
+    '<div class="statrow">'+
+      E.stat("Tickets sold", onsale.reduce(function(a,s){return a+E.soldTickets(s);},0).toLocaleString(), "paid, across on-sale shows", "mag")+
+      E.stat("Gross box office", E.money(onsale.reduce(function(a,s){return a+E.grossBoxOffice(s);},0)), "at current counts", "good")+
+      E.stat("Avg sell-through", E.pct(E.avgSellThrough(d)), "target "+E.BENCH.sellThrough.target[0]+"–"+E.BENCH.sellThrough.target[1]+"%", E.avgSellThrough(d)>=E.BENCH.sellThrough.target[0]?"good":"watch")+
+      E.stat("Est. walk-up", E.BENCH.walkRate.median+"%", "of the final count buys at the door")+
+    '</div>'+E.srcNote(E.BENCH.walkRate.src)));
 
-  function resolveVenue(perf){ return VENUES[(perf&&perf.venue)||DEFV]||VENUES[DEFV]||Object.values(VENUES)[0]||{sections:[],tiers:{}}; }
-  function buildSeats(){ SEATS=[]; SEATIX={}; REMOVED={}; TIERS=venue.tiers||{}; (venue.removed||[]).forEach(function(id){REMOVED[id]=1;});
-    if(mode==='ga'){ CAP=+venue.capacity||0; return; }
-    (venue.sections||[]).forEach(function(sec){ (sec.rows||[]).forEach(function(row){ for(var n=1;n<=row.seats;n++){ var id=sec.id+'-'+row.row+'-'+n; if(REMOVED[id])continue; var s={id:id,sec:sec.id,secName:sec.name,row:row.row,num:n,tier:row.tier,price:(TIERS[row.tier]||{}).price||0,acc:(venue.accessible||[]).indexOf(id)>=0}; SEATS.push(s); SEATIX[id]=s; } }); });
-    CAP=SEATS.length;
-  }
+  onsale.forEach(function(s){
+    var rows = s.tiers.map(function(t){ var pct = t.cap? (t.sold/t.cap*100):0;
+      return '<tr><td><div class="t-main">'+E.esc(t.name)+'</div><div class="t-sub">'+E.money(t.price)+' · '+t.comps+' comp · '+t.holds+' held</div></td>'+
+      '<td class="mono">'+t.sold+' / '+t.cap+'</td>'+
+      '<td class="fillcell"><span class="mono small">'+pct.toFixed(0)+'%</span><div class="bar '+(pct>=90?"good":"mag")+'"><i style="width:'+Math.min(100,pct)+'%"></i></div></td>'+
+      '<td style="text-align:right" class="mono">'+E.money(t.sold*t.price)+'</td></tr>'; }).join("");
+    c.appendChild(E.card('<div class="between"><div><h2>'+E.esc(s.artist)+'</h2><div class="card-sub">'+E.esc(s.date)+' · '+E.esc(s.genre)+' · cap '+E.capTickets(s)+'</div></div><div>'+E.tag(E.pct(E.sellThrough(s))+" sold", E.sellThrough(s)>=90?"good":"mag")+'</div></div>'+
+      '<table><thead><tr><th>Tier</th><th>Sold / cap</th><th style="width:160px">Sell-through</th><th style="text-align:right">Gross</th></tr></thead><tbody>'+rows+
+      '<tr class="totrow"><td><b>House</b></td><td class="mono"><b>'+E.soldTickets(s)+' / '+E.capTickets(s)+'</b></td><td class="mono"><b>'+E.pct(E.sellThrough(s))+'</b></td><td style="text-align:right" class="mono"><b>'+E.money(E.grossBoxOffice(s))+'</b></td></tr>'+
+      '</tbody></table>'));
+  });
 
-  function computePerfs(){ PERFS=[]; EVENTS.forEach(function(p){ if(p.status!=='On Sale')return; (p.performances||[]).forEach(function(pf){ PERFS.push({perfId:pf.id,prod:p.title,prodId:p.id,label:pf.label,poster:p.poster||'🎭',venue:pf.venue||DEFV}); }); }); }
-  function soldForReserved(perfId){ var set={}; SALES.forEach(function(sl){ if(sl.perfId===perfId)(sl.seats||[]).forEach(function(id){set[id]=1;}); }); return set; }
-  function soldQtyFor(perfId){ return SALES.filter(function(s){return s.perfId===perfId;}).reduce(function(a,s){return a+(+s.qty|| (s.seats?s.seats.length:0));},0); }
-
-  // ---------- holds ----------
-  function applyHolds(list){ heldOther={}; (list||[]).forEach(function(h){ if(h.by!==MYID && !sold[h.seat]) heldOther[h.seat]=h.by; }); }
-  function loadHolds(cb){
-    if(mode!=='reserved'){ if(cb)cb(); return; }
-    fetch('/api/seats',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'holds',perfId:curPerf.perfId,by:MYID})})
-      .then(function(r){return r.json();}).then(function(j){
-        if(j&&j.ok){ applyHolds(j.holds); } else { applyHolds(SEEDHOLDS.filter(function(h){return h.perfId===curPerf.perfId && (!h.until || new Date(h.until)>new Date());})); }
-        if(cb)cb();
-      }).catch(function(){ applyHolds(SEEDHOLDS.filter(function(h){return h.perfId===curPerf.perfId;})); if(cb)cb(); });
-  }
-  function serverHold(ids){ fetch('/api/seats',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'hold',perfId:curPerf.perfId,by:MYID,seats:ids,ttl:HOLD_MIN*60})})
-      .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok&&j.rejected&&j.rejected.length){ j.rejected.forEach(function(id){delete mine[id];}); toast('Seat just taken — removed '+j.rejected.length); renderAll(); } }).catch(function(){}); }
-  function serverRelease(ids){ if(!ids.length)return; fetch('/api/seats',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'release',perfId:curPerf.perfId,by:MYID,seats:ids})}).catch(function(){}); }
-
-  function startHold(){ holdUntil=Date.now()+HOLD_MIN*60000; if(ticker)clearInterval(ticker); ticker=setInterval(tickHold,1000); tickHold(); }
-  function stopHold(){ holdUntil=0; if(ticker){clearInterval(ticker);ticker=null;} el('holdTimer').textContent=''; }
-  function tickHold(){ if(!holdUntil||!Object.keys(mine).length){stopHold();return;} var left=Math.max(0,Math.round((holdUntil-Date.now())/1000)); var m=Math.floor(left/60),s=left%60; var t=el('holdTimer'); t.textContent='⏳ '+m+':'+(s<10?'0':'')+s; t.className='hold'+(left<=60?' warn':''); if(left<=0){ var ids=Object.keys(mine); mine={}; serverRelease(ids); stopHold(); renderAll(); toast('Hold expired — seats released'); } }
-
-  // ---------- render ----------
-  function seatStyle(s){
-    if(sold[s.id]) return 'fill:#d8d3df;stroke:none;opacity:.85;cursor:default';
-    if(heldOther[s.id]) return 'fill:#f4e6c6;stroke:#d99a2b;stroke-width:1.4;cursor:not-allowed';
-    if(mine[s.id]) return 'fill:var(--ink);stroke:'+GOLD+';stroke-width:2.4;cursor:pointer';
-    var col=(TIERS[s.tier]||{}).color||'#8a7f97';
-    return 'fill:'+col+';stroke:'+(s.acc?'var(--ink2);stroke-width:1.8':'rgba(0,0,0,.14);stroke-width:1')+';cursor:pointer';
-  }
-  function buildMap(){
-    var pitch=22,R=7.6,rowH=23,aisleGap=24,W=680,levelGap=18, order=['box','orch','balc'], y=44, body='';
-    body+='<rect x="'+(W*0.24)+'" y="8" width="'+(W*0.52)+'" height="22" rx="5" style="fill:var(--cream);stroke:var(--line)"/>';
-    body+='<text x="'+(W/2)+'" y="23" text-anchor="middle" style="fill:var(--mut);font:700 11px Inter,sans-serif;letter-spacing:6px">STAGE</text>';
-    order.forEach(function(lvl){
-      var secs=(venue.sections||[]).filter(function(s){return (s.level||'orch')===lvl;}); if(!secs.length)return;
-      if(lvl==='balc'){ y+=6; body+='<line x1="70" y1="'+y+'" x2="'+(W-70)+'" y2="'+y+'" style="stroke:var(--line)"/>'; body+='<text x="'+(W/2)+'" y="'+(y-5)+'" text-anchor="middle" style="fill:var(--mut);font:700 10px Inter,sans-serif;letter-spacing:3px">BALCONY</text>'; y+=20; }
-      var widths=secs.map(function(s){var m=0;(s.rows||[]).forEach(function(r){if(r.seats>m)m=r.seats;});return m*pitch;});
-      var totalW=widths.reduce(function(a,b){return a+b;},0)+aisleGap*(secs.length-1), rx=(W-totalW)/2;
-      var xs=widths.map(function(w){var v=rx;rx+=w+aisleGap;return v;});
-      if(lvl==='box'&&secs.length>=2){ xs[0]=46; xs[xs.length-1]=W-46-widths[widths.length-1]; }
-      var maxRows=0;
-      secs.forEach(function(sec,si){
-        var sx=xs[si], w=widths[si], rows=sec.rows||[]; if(rows.length>maxRows)maxRows=rows.length;
-        if(secs.length>1||lvl==='box'){ body+='<text x="'+r1(sx+w/2)+'" y="'+(y-6)+'" text-anchor="middle" style="fill:var(--mut);font:600 9.5px Inter,sans-serif;letter-spacing:2px">'+esc((sec.name||'').toUpperCase())+'</text>'; }
-        rows.forEach(function(row,ri){
-          var ry=y+ri*rowH, rw=row.seats*pitch, rx0=sx+(w-rw)/2+pitch/2;
-          body+='<text x="'+r1(sx-6)+'" y="'+(ry+3.5)+'" text-anchor="end" style="fill:var(--mut);font:600 9px Inter,sans-serif">'+esc(row.row)+'</text>';
-          for(var i=0;i<row.seats;i++){ var id=sec.id+'-'+row.row+'-'+(i+1); if(REMOVED[id])continue; var s=SEATIX[id]; if(!s)continue; var cx=rx0+i*pitch;
-            var tt=s.row+s.num+(sold[s.id]?' · Sold':(heldOther[s.id]?' · On hold':(' · '+((TIERS[s.tier]||{}).name||s.tier)+' · '+money(s.price)+(s.acc?' · accessible':''))));
-            body+='<circle data-id="'+s.id+'" cx="'+r1(cx)+'" cy="'+ry+'" r="'+R+'" style="'+seatStyle(s)+'"><title>'+esc(tt)+'</title></circle>'; }
-        });
-      });
-      y+=maxRows*rowH+levelGap;
-    });
-    return '<svg viewBox="0 0 '+W+' '+r1(y+8)+'" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;max-height:64vh;display:block">'+body+'</svg>';
-  }
-  function buildLegend(){
-    var h=Object.keys(TIERS).map(function(k){var t=TIERS[k];return '<span><i class="dot" style="background:'+t.color+'"></i>'+esc(t.name)+' · '+money(t.price)+'</span>';}).join('');
-    h+='<span><i class="dot" style="background:#f4e6c6;border:1.5px solid #d99a2b"></i>On hold</span><span><i class="dot" style="background:#d8d3df"></i>Sold</span><span><i class="dot" style="background:var(--ink);border:2px solid '+GOLD+'"></i>Yours</span><span><i class="dot" style="background:#fff;border:2px solid var(--ink2)"></i>Accessible</span>';
-    return h;
-  }
-  function selList(){ return Object.keys(mine).map(function(id){return SEATIX[id];}).filter(Boolean).sort(function(a,b){return (a.sec+a.row).localeCompare(b.sec+b.row)||(a.num-b.num);}); }
-
-  function renderTools(){
-    if(mode==='ga'){ el('tools').innerHTML=''; return; }
-    el('tools').innerHTML='<span style="font-size:12.5px;color:var(--mut)">Best available</span><input type="number" id="baN" value="2" min="1" max="12"><button class="ghost" id="baBtn">Auto-pick</button>';
-    el('baBtn').addEventListener('click',bestAvailable);
-  }
-  function renderAll(){
-    if(mode==='ga'){ renderGA(); return; }
-    el('mapWrap').innerHTML=buildMap(); el('legend').innerHTML=buildLegend();
-    var soldCount=Object.keys(sold).length, gross=SEATS.reduce(function(s,x){return s+(sold[x.id]?x.price:0);},0);
-    el('kSold').textContent=soldCount; el('kPct').textContent=(CAP?Math.round(soldCount/CAP*100):0)+'%'; el('kGross').textContent=money(gross); el('kAvail').textContent=(CAP-soldCount-Object.keys(heldOther).length);
-    renderCart(); renderRecent();
-  }
-  function renderCart(){
-    var list=selList();
-    el('cartArea').innerHTML='<div class="cart" id="cart">'+(list.length?list.map(function(s){return '<div class="crow"><span class="s">'+esc(s.row+s.num)+'</span><span class="t">'+esc(s.secName+' · '+((TIERS[s.tier]||{}).name||s.tier))+'</span><span class="p">'+money(s.price)+'</span><button class="x" data-rm="'+esc(s.id)+'">✕</button></div>';}).join(''):'<div class="empty">Tap seats, or use Best available.</div>')+'</div>';
-    var comp=el('comp').checked, total=comp?0:list.reduce(function(s,x){return s+x.price;},0);
-    el('cCount').textContent=list.length; el('cTotal').textContent=comp&&list.length?'Comp':money(total);
-    el('sellBtn').disabled=!list.length; el('sellBtn').textContent=list.length?('Complete sale · '+(comp?'Comp':money(total))):'Complete sale';
-    el('cart').querySelectorAll('[data-rm]').forEach(function(b){b.addEventListener('click',function(){ var id=b.getAttribute('data-rm'); delete mine[id]; serverRelease([id]); if(!Object.keys(mine).length)stopHold(); renderAll(); });});
-  }
-  function renderRecent(){
-    var pid=curPerf&&curPerf.perfId, mine2=SALES.filter(function(s){return s.perfId===pid;}).sort(function(a,b){return (b.ts||'').localeCompare(a.ts||'');}).slice(0,7);
-    el('recent').innerHTML=mine2.length?mine2.map(function(s){var q=s.qty||(s.seats?s.seats.length:0);return '<div class="srow"><span class="b">'+esc(s.buyer||'Walk-up')+'</span><span class="m">'+q+' seat'+(q===1?'':'s')+' · '+esc(s.tender||'')+'</span><span class="p">'+(s.total?money(s.total):'Comp')+'</span></div>';}).join(''):'<div class="empty">No sales yet for this performance.</div>';
-  }
-
-  // ---------- GA mode ----------
-  function renderGA(){
-    var tkeys=Object.keys(TIERS); if(!gaTier)gaTier=tkeys[0];
-    var price=(TIERS[gaTier]||{}).price||0, avail=CAP-soldQty;
-    el('mapWrap').innerHTML='<div style="padding:20px 10px"><div style="text-align:center;font-family:Georgia,serif;font-weight:800;font-size:20px;color:var(--accent)">General Admission</div>'+
-      '<div style="text-align:center;color:var(--mut);font-size:13px;margin:4px 0 14px">'+esc(venue.name||'')+'</div>'+
-      '<div style="max-width:460px;margin:0 auto"><div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--mut)"><span><b style="color:var(--ink)">'+soldQty+'</b> sold</span><span><b style="color:var(--ink)">'+avail+'</b> available of '+CAP+'</span></div>'+
-      '<div class="meter"><i style="width:'+(CAP?Math.round(soldQty/CAP*100):0)+'%"></i></div></div></div>';
-    el('legend').innerHTML=tkeys.map(function(k){return '<span><i class="dot" style="background:'+(TIERS[k].color||'#6a3d9c')+'"></i>'+esc(TIERS[k].name)+' · '+money(TIERS[k].price)+'</span>';}).join('');
-    // tools = tier select + stepper
-    el('tools').innerHTML=(tkeys.length>1?'<select id="gaTier" style="flex:1;border:1px solid var(--line);border-radius:9px;padding:8px;font:inherit;background:var(--paper);color:var(--ink)">'+tkeys.map(function(k){return '<option value="'+k+'"'+(k===gaTier?' selected':'')+'>'+esc(TIERS[k].name)+' · '+money(TIERS[k].price)+'</option>';}).join('')+'</select>':'');
-    if(el('gaTier'))el('gaTier').addEventListener('change',function(){gaTier=this.value;renderGA();});
-    el('cartArea').innerHTML='<div class="step"><button id="gaMinus">−</button><span class="q" id="gaQ">'+gaQty+'</span><button id="gaPlus">＋</button><span style="margin-left:auto;color:var(--mut);font-size:12.5px">'+esc((TIERS[gaTier]||{}).name||'')+'</span></div>';
-    el('gaMinus').addEventListener('click',function(){gaQty=Math.max(0,gaQty-1);renderGA();});
-    el('gaPlus').addEventListener('click',function(){gaQty=Math.min(avail,gaQty+1);renderGA();});
-    var comp=el('comp').checked, total=comp?0:gaQty*price;
-    el('cCount').textContent=gaQty; el('cTotal').textContent=comp&&gaQty?'Comp':money(total);
-    el('sellBtn').disabled=!gaQty; el('sellBtn').textContent=gaQty?('Complete sale · '+(comp?'Comp':money(total))):'Complete sale';
-    el('kSold').textContent=soldQty; el('kPct').textContent=(CAP?Math.round(soldQty/CAP*100):0)+'%'; el('kGross').textContent=money(SALES.filter(function(s){return s.perfId===(curPerf&&curPerf.perfId);}).reduce(function(a,s){return a+(+s.total||0);},0)); el('kAvail').textContent=avail;
-    renderRecent();
-  }
-
-  function bestAvailable(){
-    var n=Math.max(1,Math.min(12,+el('baN').value||2));
-    var order={premium:0,standard:1,balcony:2};
-    // try contiguous block in the best row
-    var rowsByScore=[];
-    (venue.sections||[]).forEach(function(sec){ (sec.rows||[]).forEach(function(row){ rowsByScore.push({sec:sec,row:row}); }); });
-    rowsByScore.sort(function(a,b){ var ta=(order[a.row.tier]==null?9:order[a.row.tier]), tb=(order[b.row.tier]==null?9:order[b.row.tier]); if(ta!==tb)return ta-tb; return a.row.row.localeCompare(b.row.row); });
-    var pick=null;
-    for(var k=0;k<rowsByScore.length&&!pick;k++){ var sec=rowsByScore[k].sec,row=rowsByScore[k].row; for(var start=1;start+n-1<=row.seats;start++){ var ok=true,ids=[]; for(var i=0;i<n;i++){ var id=sec.id+'-'+row.row+'-'+(start+i); if(REMOVED[id]||!SEATIX[id]||sold[id]||heldOther[id]||mine[id]){ok=false;break;} ids.push(id);} if(ok){pick=ids;break;} } }
-    if(!pick){ // fallback: any n singles
-      pick=[]; for(var s2=0;s2<SEATS.length&&pick.length<n;s2++){ var q=SEATS[s2].id; if(!sold[q]&&!heldOther[q]&&!mine[q])pick.push(q);} }
-    if(!pick.length){ toast('No seats available'); return; }
-    pick.forEach(function(id){mine[id]=1;}); startHold(); serverHold(pick); renderAll();
-  }
-
-  function toast(m){ var t=el('toast'); t.textContent=m; t.classList.add('on'); setTimeout(function(){t.classList.remove('on');},2400); }
-
-  window.completeSale=function(){
-    var comp=el('comp').checked, rec, ids=[];
-    if(mode==='ga'){ if(!gaQty)return; var price=(TIERS[gaTier]||{}).price||0; rec={perfId:curPerf.perfId,production:curPerf.prod,buyer:(el('buyer').value.trim()||'Walk-up'),qty:gaQty,tier:(TIERS[gaTier]||{}).name,tender:comp?'Comp':el('tender').value,total:comp?0:gaQty*price,ts:new Date().toISOString()}; }
-    else { ids=Object.keys(mine); if(!ids.length)return; var total=comp?0:ids.reduce(function(s,id){return s+(SEATIX[id].price||0);},0); rec={perfId:curPerf.perfId,production:curPerf.prod,buyer:(el('buyer').value.trim()||'Walk-up'),seats:ids,tender:comp?'Comp':el('tender').value,total:total,ts:new Date().toISOString()}; }
-    el('sellBtn').disabled=true; el('sellBtn').textContent='Recording…';
-    window.HUBDATA.save('sales',rec).then(function(){
-      if(mode==='reserved')serverRelease(ids);
-      showReceipt(rec, ids);
-      el('buyer').value=''; el('comp').checked=false; mine={}; gaQty=0; stopHold();
-      window.HUBDATA.list('sales').then(function(a){ SALES=a||[]; sold=soldForReserved(curPerf.perfId); soldQty=soldQtyFor(curPerf.perfId); loadHolds(renderAll); });
-    });
-  };
-  function showReceipt(rec, ids){
-    el('rConf').textContent='CONF '+(BR.short||'MQ').toUpperCase().slice(0,3)+'-'+Date.now().toString(36).toUpperCase().slice(-6);
-    var seatsTxt = rec.seats? rec.seats.map(function(id){var s=SEATIX[id];return s?s.row+s.num:id;}).join(', ') : (rec.qty+' × '+rec.tier);
-    el('rBody').innerHTML='<div class="r"><span>'+esc(curPerf.poster+' '+rec.production)+'</span></div><div class="r"><span style="color:var(--mut)">'+esc(curPerf.label)+'</span></div>'+
-      '<div class="seats">'+esc(seatsTxt)+'</div>'+
-      '<div class="r" style="margin-top:8px"><span>'+esc(rec.buyer)+'</span><span>'+esc(rec.tender)+'</span></div>'+
-      '<div class="r"><b>Total</b><b>'+(rec.total?money(rec.total):'Comp')+'</b></div>';
-    el('rcpScrim').classList.add('on');
-  }
-  window.closeRcp=function(){ el('rcpScrim').classList.remove('on'); };
-
-  el('mapWrap').addEventListener('click',function(e){ if(mode!=='reserved')return; var t=e.target.closest('[data-id]'); if(!t)return; var id=t.getAttribute('data-id'); if(sold[id]||heldOther[id])return; if(mine[id]){delete mine[id];serverRelease([id]); if(!Object.keys(mine).length)stopHold();} else {mine[id]=1; startHold(); serverHold([id]);} renderAll(); });
-  el('comp').addEventListener('change',function(){ renderAll(); });
-  el('perfSel').addEventListener('change',function(){ setPerf(this.value); });
-
-  function setPerf(perfId){
-    var ids=Object.keys(mine); if(ids.length)serverRelease(ids); mine={}; gaQty=0; stopHold();
-    curPerf=PERFS.filter(function(p){return p.perfId===perfId;})[0]||PERFS[0]; if(!curPerf){return;}
-    venue=resolveVenue(curPerf); mode=venue.mode==='ga'?'ga':'reserved'; buildSeats();
-    sold=mode==='reserved'?soldForReserved(curPerf.perfId):{}; soldQty=mode==='ga'?soldQtyFor(curPerf.perfId):0;
-    el('nowShow').innerHTML='<b>'+esc(curPerf.poster+' '+curPerf.prod)+'</b> · '+esc(curPerf.label)+' · '+esc(venue.name||'');
-    el('houseName').innerHTML='<b>'+esc(venue.name||'The House')+'</b> · '+(mode==='ga'?(CAP+' cap · general admission'):(CAP+' seats — generated from the venue config'));
-    renderTools(); loadHolds(renderAll);
-  }
-
-  window.AssistantContext=function(){ var soldCount=mode==='ga'?soldQty:Object.keys(sold).length; return { view:'box office', venue:venue&&venue.name, mode:mode, capacity:CAP,
-    performance:curPerf?{show:curPerf.prod,when:curPerf.label}:null, sold:soldCount, available:CAP-soldCount, pct:CAP?Math.round(soldCount/CAP*100):0 }; };
-
-  function poll(){ if(pollTimer)clearInterval(pollTimer); pollTimer=setInterval(function(){ if(!curPerf)return; window.HUBDATA.list('sales').then(function(a){ SALES=a||[]; if(mode==='reserved')sold=soldForReserved(curPerf.perfId); else soldQty=soldQtyFor(curPerf.perfId); loadHolds(renderAll); }); },12000); }
-
-  function load(){ Promise.all([window.HUBDATA.list(BO.eventCollection||'productions'),window.HUBDATA.list('patrons'),window.HUBDATA.list('sales'),window.HUBDATA.list('holds')]).then(function(r){
-    EVENTS=r[0]||[]; PATRONS=r[1]||[]; SALES=r[2]||[]; SEEDHOLDS=r[3]||[];
-    el('patronList').innerHTML=PATRONS.map(function(p){return '<option value="'+esc(p.name)+'">';}).join('');
-    computePerfs();
-    el('perfSel').innerHTML=PERFS.map(function(p){return '<option value="'+esc(p.perfId)+'">'+esc(p.poster+' '+p.prod+' — '+p.label)+'</option>';}).join('')||'<option>No performances on sale</option>';
-    if(PERFS.length){ setPerf(PERFS[0].perfId); poll(); }
-  }); }
-  load();
+  var blocked = E.blockedOnSale(d);
+  if (blocked.length) c.appendChild(E.card('<div class="between"><div><h2>Not on sale yet</h2><div class="card-sub">These are announced but blocked at the rights-gate — no manifest because they can\'t sell a ticket until they\'re booked.</div></div><div>'+E.tag(blocked.length+" blocked","crim")+'</div></div>'+
+    '<div class="stack">'+blocked.map(function(s){return '<div class="fence crim"><b>'+E.esc(s.artist)+'</b> — '+E.esc(s.date)+'. '+(s.contractSigned?"":"Contract unsigned. ")+(s.depositReceived?"":"Deposit not in. ")+'<a href="deals.html">Work the deal →</a></div>';}).join("")+'</div>'));
 })();
-</script>
-</body>
-</html>
+</script></body></html>

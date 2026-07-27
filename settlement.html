@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Settlement · Amphitheater OS</title><link rel="icon" href="https://www.aexperiences.com/Amphitheater_OS.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="amph.css"></head><body>
+<script src="amph.js"></script>
+<script>
+(function () {
+  var E = window.Amph, c = E.mount({ active:"settlement.html", crumb:"Settlement" }), d = E.db();
+  c.appendChild(E.page("Settlement","The night-of settlement sheet — the whole reason a room switches OS. Pick a show; the sheet compiles the gross off the box office, subtracts taxes, fees and every expense, applies the deal, and cuts the artist. One click, not a 1am spreadsheet.",
+    '<span class="tag gold">One-Click Settlement</span>'));
+
+  /* selector */
+  var sel = '<div class="row" style="gap:8px;flex-wrap:wrap">'+d.shows.map(function(s){
+    return '<button class="btn '+(s.onSale?"ghost":"ghost")+' sm shsel" data-id="'+s.id+'">'+E.esc(s.artist)+' <span class="muted small">· '+E.esc(s.date)+'</span></button>';
+  }).join("")+'</div>';
+  c.appendChild(E.card('<h2>Choose a show to settle</h2><div class="card-sub">Any show on the books. The sheet is live math — change a ticket count or an expense and it re-cuts.</div>'+sel));
+
+  var sheetHost = document.createElement("div"); sheetHost.id = "sheetHost"; c.appendChild(sheetHost);
+
+  function line(label, val, opts){ opts=opts||{}; return '<tr class="'+(opts.cls||"")+'"><td>'+E.esc(label)+(opts.note?' <span class="muted small">'+E.esc(opts.note)+'</span>':'')+'</td><td style="text-align:right" class="mono"'+(opts.color?' style="text-align:right;color:'+opts.color+'"':'')+'>'+val+'</td></tr>'; }
+  function renderSheet(id){
+    var s = d.shows.filter(function(x){return x.id===id;})[0]; if(!s) return;
+    var gross=E.grossBoxOffice(s), tax=E.ticketTax(s), fac=E.facilityFees(s), exp=E.showExpenses(s), ac=E.artistCut(s), vn=E.venueNet(s), sold=E.soldTickets(s);
+    var dealLabel = s.deal.type==="guarantee"?("Flat guarantee — $"+s.deal.guarantee.toLocaleString()):(s.deal.type==="door"?("Door deal — "+s.deal.artistPct+"% of the net to the artist"):("Guarantee vs. overage — $"+s.deal.guarantee.toLocaleString()+" or +"+s.deal.splitPct+"% of the overage, whichever is greater"));
+    var e=s.expenses;
+    var manifest = s.tiers.map(function(t){ return '<tr><td>'+E.esc(t.name)+' <span class="muted small">· '+E.money(t.price)+' × '+t.sold+'</span></td><td style="text-align:right" class="mono">'+E.money(t.sold*t.price)+'</td></tr>'; }).join("");
+    var canSettle = s.onSale;
+    var html =
+      '<div class="between"><div><h2>Settlement sheet — '+E.esc(s.artist)+'</h2><div class="card-sub">'+E.esc(s.date)+' · '+E.esc(s.genre)+' · '+sold+' tickets sold · '+E.pct(E.sellThrough(s))+' of house</div></div><div>'+E.tag(s.status, s.settled?"good":(s.onSale?"mag":"ghost"))+'</div></div>'+
+      '<div class="grid g2" style="margin-top:6px">'+
+        '<div><table><thead><tr><th>Box office</th><th style="text-align:right">Gross</th></tr></thead><tbody>'+manifest+
+          '<tr class="totrow"><td><b>Gross box office</b></td><td style="text-align:right" class="mono"><b>'+E.money(gross)+'</b></td></tr></tbody></table></div>'+
+        '<div><table><thead><tr><th>Off the top</th><th style="text-align:right">Amount</th></tr></thead><tbody>'+
+          line("Ticket tax", "−"+E.money(tax), {note:"("+(E.TICKET_TAX*100)+"% of gross)"})+
+          line("Facility fee", "−"+E.money(fac), {note:"($"+E.FACILITY_FEE+" × "+sold+" paid)"})+
+          line("Production (sound/lights/backline)", "−"+E.money(e.prod))+
+          line("Marketing & advertising", "−"+E.money(e.mkt))+
+          line("Hospitality & rider", "−"+E.money(e.hosp))+
+          line("Staffing & security", "−"+E.money(e.staff))+
+          line("Facility & insurance", "−"+E.money(e.fac))+
+          '<tr class="totrow"><td><b>Net to split</b></td><td style="text-align:right" class="mono"><b>'+E.money(E.netToSplit(s))+'</b></td></tr>'+
+        '</tbody></table></div>'+
+      '</div>'+
+      '<div class="fence" style="margin-top:6px"><b>The deal:</b> '+E.esc(dealLabel)+'.</div>'+
+      '<table style="margin-top:12px"><tbody>'+
+        '<tr class="totrow"><td><b>Artist settlement</b></td><td style="text-align:right" class="mono"><b style="color:var(--mag-2)">'+E.money(ac)+'</b></td></tr>'+
+        '<tr class="grandrow"><td><b>Venue net for the night</b></td><td style="text-align:right" class="mono"><b style="color:'+(vn>0?'var(--good)':'var(--bad)')+'">'+E.money(vn)+'</b></td></tr>'+
+      '</tbody></table>'+
+      '<div class="row" style="margin-top:14px;gap:10px">'+
+        (s.settled ? '<span class="chip clear">✓ settled and filed</span>' :
+          (canSettle ? '<button class="btn gold" id="doSettle" data-id="'+s.id+'">Compile &amp; stage the settlement sheet →</button>' : '<span class="chip hold">✗ not on sale — nothing to settle</span>'))+
+        '<span class="muted small" style="max-width:44ch;line-height:1.5">Compiling stages the sheet on the Approval Desk. It does <b>not</b> pay anyone — Ghost Mode. The owner signs, then the money moves.</span>'+
+      '</div>';
+    sheetHost.innerHTML = ''; sheetHost.appendChild(E.card(html));
+    var b = document.getElementById("doSettle");
+    if (b) b.addEventListener("click", function(){
+      E.stage("settle","Settlement — "+s.artist, "Compiled sheet: "+E.money(gross)+" gross, "+E.money(ac)+" to the artist, "+E.money(vn)+" venue net.", "A settlement pays real money to a tour manager — the owner signs it, not the software.", "Ledger (Settlement AE)");
+      E.toast("Settlement sheet compiled and staged on the Approval Desk — nothing paid.","ok");
+      setTimeout(function(){ location.href="approvals.html"; }, 900);
+    });
+  }
+  setTimeout(function(){
+    Array.prototype.forEach.call(document.querySelectorAll(".shsel"), function(b){ b.addEventListener("click", function(){
+      Array.prototype.forEach.call(document.querySelectorAll(".shsel"), function(x){x.classList.remove("gold");x.classList.add("ghost");});
+      b.classList.remove("ghost"); b.classList.add("gold"); renderSheet(b.dataset.id);
+    }); });
+    /* default to the sold-out closed show — Harbor Lights */
+    var def = d.shows.filter(function(s){return s.settled;})[0] || d.shows.filter(function(s){return s.onSale;})[0] || d.shows[0];
+    if (def){ var btn=document.querySelector('.shsel[data-id="'+def.id+'"]'); if(btn){btn.classList.remove("ghost");btn.classList.add("gold");} renderSheet(def.id); }
+  },0);
+})();
+</script></body></html>

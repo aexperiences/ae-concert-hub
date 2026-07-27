@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Advance & Riders · Amphitheater OS</title><link rel="icon" href="https://www.aexperiences.com/Amphitheater_OS.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="amph.css"></head><body>
+<script src="amph.js"></script>
+<script>
+(function () {
+  var E = window.Amph, c = E.mount({ active:"advance.html", crumb:"Advance & Riders" }), d = E.db();
+  c.appendChild(E.page("Advance & Riders","The advance — everything settled with the tour manager before load-in. Hospitality and technical riders, the checklist, and the day-of logistics. Every rider line rolls into the show's expense line, so it lands in the settlement, not a surprise."));
+
+  var onsale = d.shows.filter(function(s){return s.onSale && !s.settled;});
+  onsale.forEach(function(s){
+    var checklist = [["Technical rider received & reviewed", true],["Input list vs. house PA confirmed", true],["Hospitality rider costed into the show", true],["Load-in / soundcheck / set times locked", s.id!=="s5"],["Backline & rentals confirmed", s.id==="s1"],["Ground transport & parking", false]];
+    var done = checklist.filter(function(r){return r[1];}).length;
+    c.appendChild(E.card('<div class="between"><div><h2>'+E.esc(s.artist)+'</h2><div class="card-sub">'+E.esc(s.date)+' · rider spend rolled into expenses: '+E.money(s.expenses.hosp+s.expenses.prod)+'</div></div><div>'+E.tag(done+"/"+checklist.length+" advanced", done===checklist.length?"good":"watch")+'</div></div>'+
+      '<table><thead><tr><th>Advance item</th><th style="width:120px">Status</th></tr></thead><tbody>'+
+      checklist.map(function(r){return '<tr><td>'+E.esc(r[0])+'</td><td>'+(r[1]?'<span class="chip clear">✓ done</span>':'<span class="chip hold">○ open</span>')+'</td></tr>';}).join("")+'</tbody></table>'));
+  });
+
+  var blocked = E.blockedOnSale(d);
+  if (blocked.length) c.appendChild(E.card('<h2>Held — don\'t advance yet</h2><div class="card-sub">The org won\'t spend on hospitality for a show that can\'t go on sale.</div>'+
+    '<div class="stack">'+blocked.map(function(s){return '<div class="fence crim"><b>'+E.esc(s.artist)+'</b> — advancing means spending against the rider. The contract isn\'t signed, so the advance is frozen. <a href="deals.html">Close the deal first →</a></div>';}).join("")+'</div>'));
+})();
+</script></body></html>

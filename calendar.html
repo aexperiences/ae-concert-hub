@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shows & Calendar · Amphitheater OS</title><link rel="icon" href="https://www.aexperiences.com/Amphitheater_OS.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="amph.css"></head><body>
+<script src="amph.js"></script>
+<script>
+(function () {
+  var E = window.Amph, c = E.mount({ active:"calendar.html", crumb:"Shows & Calendar" }), d = E.db();
+  c.appendChild(E.page("Shows & Calendar","The lineup — announced, on sale, and settled. Holds and confirms, the run of the season, and the day-of-show clock. Every date routes to its deal, its box office and, eventually, its settlement."));
+
+  var sorted = d.shows.slice().sort(function(a,b){ return a.date<b.date?-1:1; });
+  c.appendChild(E.card('<div class="between"><div><h2>The season</h2><div class="card-sub">Newest date last. A show can\'t move to on-sale until its deal clears the gate.</div></div><div>'+E.tag(sorted.length+" shows","mag")+'</div></div>'+
+    '<table><thead><tr><th>Date</th><th>Show</th><th>Genre</th><th>Deal</th><th>Status</th><th></th></tr></thead><tbody>'+
+    sorted.map(function(s){ var dealLabel = s.deal.type==="guarantee"?"Guarantee":(s.deal.type==="door"?"Door":"Gtd vs %");
+      return '<tr><td class="mono small">'+E.esc(s.date)+'</td><td><div class="t-main">'+E.esc(s.artist)+'</div><div class="t-sub">cap '+E.capTickets(s)+' · '+E.pct(E.sellThrough(s))+' sold</div></td>'+
+      '<td>'+E.esc(s.genre)+'</td><td><span class="mono small">'+dealLabel+'</span></td>'+
+      '<td>'+E.tag(s.status, s.settled?"good":(s.onSale?"mag":(E.canGoOnSale(s)?"watch":"crim")))+'</td>'+
+      '<td><a class="btn ghost sm" href="'+(s.settled?"settlement.html":(s.onSale?"boxoffice.html":"deals.html"))+'">'+(s.settled?"Settlement":(s.onSale?"Box office":"Work the deal"))+' →</a></td></tr>'; }).join("")+'</tbody></table>'));
+
+  /* day-of-show board for the next on-sale */
+  var next = sorted.filter(function(s){return s.onSale && !s.settled;})[0];
+  if (next) {
+    var clock = [["3:00 PM","Load-in & stage set"],["4:30 PM","Soundcheck"],["6:00 PM","Doors staff call · bar prep"],["7:00 PM","Doors open"],["8:00 PM","Support set"],["9:15 PM","Headline — "+next.artist.split(" (")[0]],["11:00 PM","Settlement with the tour manager"]];
+    c.appendChild(E.card('<div class="between"><div><h2>Day-of-show — '+E.esc(next.artist)+'</h2><div class="card-sub">'+E.esc(next.date)+'. The clock every department works against.</div></div><div>'+E.tag("run of show","ghost")+'</div></div>'+
+      '<table><thead><tr><th style="width:120px">Time</th><th>Cue</th></tr></thead><tbody>'+clock.map(function(r){return '<tr><td class="mono small">'+r[0]+'</td><td>'+E.esc(r[1])+'</td></tr>';}).join("")+'</tbody></table>'));
+  }
+})();
+</script></body></html>

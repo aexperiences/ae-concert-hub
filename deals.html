@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Artists & Deals · Amphitheater OS</title><link rel="icon" href="https://www.aexperiences.com/Amphitheater_OS.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="amph.css"></head><body>
+<script src="amph.js"></script>
+<script>
+(function () {
+  var E = window.Amph, c = E.mount({ active:"deals.html", crumb:"Artists & Deals" }), d = E.db();
+  c.appendChild(E.page("Artists & Deals","The offer and the deal memo — guarantee, door, or guarantee-vs-overage. This is where the on-sale rights-gate lives: no show sells a ticket until its contract is signed and its deposit is in.",
+    '<span class="tag crim">rights-gate</span>'));
+
+  /* deal-type primer */
+  c.appendChild(E.card('<h2>How the deals work</h2><div class="card-sub">Each one computes a different settlement — the memo is what the sheet reads.</div>'+
+    '<div class="grid g3" style="margin-top:6px">'+E.DEAL_TYPES.map(function(t){return '<div class="minicard"><div class="mc-h">'+E.esc(t.name)+'</div><div class="mc-b">'+E.esc(t.note)+'</div></div>';}).join("")+'</div>'));
+
+  var host = document.createElement("div"); c.appendChild(host);
+  function render(){
+    d = E.db();
+    host.innerHTML = "";
+    var rows = d.shows.map(function(s){
+      var dealLabel = s.deal.type==="guarantee"?("$"+s.deal.guarantee.toLocaleString()+" flat"):(s.deal.type==="door"?(s.deal.artistPct+"% door"):("$"+s.deal.guarantee.toLocaleString()+" vs "+s.deal.splitPct+"%"));
+      var clear = E.canGoOnSale(s);
+      return '<tr><td><div class="t-main">'+E.esc(s.artist)+'</div><div class="t-sub">'+E.esc(s.date)+' · '+E.esc(s.genre)+'</div></td>'+
+        '<td><span class="mono small">'+E.esc(dealLabel)+'</span></td>'+
+        '<td>'+(s.contractSigned?'<span class="chip clear">✓ signed</span>':'<button class="btn ghost sm gate-sign" data-id="'+s.id+'" data-f="contractSigned">Sign contract</button>')+'</td>'+
+        '<td>'+(s.depositReceived?'<span class="chip clear">✓ in</span>':'<button class="btn ghost sm gate-sign" data-id="'+s.id+'" data-f="depositReceived">Log deposit</button>')+'</td>'+
+        '<td>'+(s.onSale?'<span class="chip clear">on sale</span>':(clear?'<button class="btn gold sm gate-onsale" data-id="'+s.id+'">Put on sale →</button>':'<span class="chip hold">✗ gated</span>'))+'</td></tr>';
+    }).join("");
+    host.appendChild(E.card('<div class="between"><div><h2>The book of deals</h2><div class="card-sub">Sign the contract and log the deposit, and the on-sale unlocks. Miss either, and the gate holds it shut.</div></div><div>'+E.tag(E.blockedOnSale(d).length+" gated", E.blockedOnSale(d).length?"crim":"good")+'</div></div>'+
+      '<table><thead><tr><th>Show</th><th>Deal</th><th style="width:130px">Contract</th><th style="width:130px">Deposit</th><th style="width:150px">On sale</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+      '<div class="fence crim" style="margin-top:12px"><b>The gate is the point.</b> Nova Sol is announced and marketing is ready, but the paper isn\'t done. Try to put it on sale — the OS won\'t let you until the contract and deposit are both in. That\'s a refund event it just prevented.</div>'));
+    wire();
+  }
+  function wire(){
+    Array.prototype.forEach.call(document.querySelectorAll(".gate-sign"), function(b){ b.addEventListener("click", function(){
+      var id=b.dataset.id, f=b.dataset.f;
+      E.save(function(x){ x.shows.forEach(function(s){ if(s.id===id) s[f]=true; }); });
+      E.toast((f==="contractSigned"?"Contract marked signed.":"Deposit logged.")+" One step closer to on-sale.","ok"); render();
+    }); });
+    Array.prototype.forEach.call(document.querySelectorAll(".gate-onsale"), function(b){ b.addEventListener("click", function(){
+      var id=b.dataset.id, s=E.db().shows.filter(function(x){return x.id===id;})[0];
+      if(!E.canGoOnSale(s)){ E.toast("Blocked — contract and deposit must both be in first.",""); return; }
+      E.stage("onsale","Put "+s.artist+" on sale", "Contract signed and deposit in. Marketing is ready to open the on-sale.", "An on-sale is a public commitment — the owner opens it, not the software.", "Priya (Box Office AE)");
+      E.toast("Cleared the gate — staged the on-sale on the Approval Desk (Ghost Mode).","ok");
+      setTimeout(function(){ location.href="approvals.html"; }, 900);
+    }); });
+  }
+  render();
+})();
+</script></body></html>

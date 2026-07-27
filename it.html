@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IT · System Health · Amphitheater OS</title><link rel="icon" href="https://www.aexperiences.com/Amphitheater_OS.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="amph.css"></head><body>
+<script src="amph.js"></script>
+<script>
+(function () {
+  var E = window.Amph, c = E.mount({ active:"it.html", crumb:"IT · System Health" }), d = E.db();
+  c.appendChild(E.page("IT · System Health","CLEAR / WATCH / INTERVENE across ticketing, payments, the presale portal, logins and the website. A ticketing outage on an on-sale is revenue you never get back — so the box office and the payment rail are the ones that page a human."));
+
+  function badge(st){ return st==="CLEAR"?'<span class="chip clear">CLEAR</span>':(st==="WATCH"?'<span class="chip gold">WATCH</span>':'<span class="chip hold">INTERVENE</span>'); }
+  var watch = d.systems.filter(function(s){return s.state!=="CLEAR";});
+  c.appendChild(E.card('<div class="between"><div><h2>Services</h2><div class="card-sub">Live health, newest incident surfaced.</div></div><div>'+E.tag(watch.length+" on watch", watch.length?"watch":"good")+'</div></div>'+
+    '<table><thead><tr><th>Service</th><th style="width:130px">State</th><th>Signal</th></tr></thead><tbody>'+
+    d.systems.map(function(s){return '<tr><td class="t-main">'+E.esc(s.name)+'</td><td>'+badge(s.state)+'</td><td class="muted small">'+E.esc(s.metric)+'</td></tr>';}).join("")+'</tbody></table>'+
+    '<div class="fence" style="margin-top:12px"><b>On-sale readiness.</b> The presale portal is spiking ahead of the Ember Coast on-sale — the queue is armed and failover verified. Nothing needs INTERVENE, but IT holds the watch until the on-sale clears.</div>'));
+})();
+</script></body></html>

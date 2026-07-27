@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent Org · Event Bus · Amphitheater OS</title><link rel="icon" href="https://www.aexperiences.com/Amphitheater_OS.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="amph.css"></head><body>
+<script src="amph.js"></script>
+<script>
+(function () {
+  var E = window.Amph, c = E.mount({ active:"org.html", crumb:"Agent Org · Event Bus" });
+  var COO = E.SEATS.coo, DEPTS = E.SEATS.depts;
+  function byKey(k){ return DEPTS.filter(function(x){return x.key===k;})[0]; }
+  c.appendChild(E.page("Agent Org · Event Bus","Ten departments, each a five-seat chain, all of it visible. Roxy routes and gates at the top. Every hop underneath her is published to the bus in the open — including the ones that get held back.",
+    '<button class="btn gold sm" id="toRoxy">Ask Roxy</button>'));
+  c.appendChild(E.card('<h2>What is actually running on this page</h2><div class="card-sub">Said plainly, before anything below it.</div>'+
+    '<div class="fence"><b>The brain on this page is a deterministic local stand-in.</b> Browser-only: no server, no API key, no model call. Every stance, confidence figure and reason is computed by fixed code from this tab\'s own seeded data, so the same question always returns the same answer.<br><br><b>The real engine runs server-side on DeepSeek.</b> Same chain, same seats, same gates, same Output Contract — with a language model in the seats instead of a stand-in. What the showroom is faithful about is the <i>structure</i>: who talks to whom, what gets held back, and what a released conclusion has to carry.</div>'+
+    '<div class="divider"></div><div class="row">'+E.tag("local stand-in brain","ghost")+E.tag("server-side engine: DeepSeek","ghost")+E.tag("deterministic","ghost")+E.tag("session-only, resets when you leave","ghost")+E.tag("Ghost Mode: nothing sells, settles or signs","watch")+'</div>'));
+  var roxySamples = ["Which shows should we push?","Can we put Nova Sol on sale?","What's our venue net looking like?","What should we settle tonight?","Which matters need a real attorney?"];
+  c.appendChild(E.card('<div class="between"><div><h2>'+E.esc(COO.name)+' · '+E.esc(COO.role)+'</h2><div class="card-sub">'+E.esc(COO.line)+'</div></div><div class="row">'+E.tag(COO.tier,"watch")+E.tag(COO.dept,"ghost")+'</div></div>'+
+    '<div class="grid g2"><div><table><thead><tr><th>Roxy does</th></tr></thead><tbody><tr><td>Takes the ask off the owner\'s desk and reads it.</td></tr><tr><td>Routes it to exactly one department chain — never two at once.</td></tr><tr><td>Lets that chain work under <i>its own</i> confidence bar.</td></tr><tr><td>Packages one clean answer back up, reasons attached.</td></tr><tr><td>Sets the follow-up when something is held.</td></tr></tbody></table></div>'+
+    '<div><table><thead><tr><th>Roxy does not</th></tr></thead><tbody><tr><td>Do the department\'s work. She never books, sells or settles.</td></tr><tr><td>Overrule a Pacemaker. If the chain held it, it stays held.</td></tr><tr><td>Invent a number. An unsourced figure is tagged an assumption or dropped.</td></tr><tr><td>Sell, settle, sign or spend. Those are Fences — they go to the Approval Desk.</td></tr><tr><td>Reach the owner for anything the org can honestly clear itself.</td></tr></tbody></table></div></div>'+
+    '<div class="divider"></div><div class="row" style="margin-bottom:12px"><input id="qroxy" placeholder="Ask the COO anything — she routes it to the right chain." style="flex:1;min-width:260px"><button class="btn gold" id="goroxy">Route it</button></div>'+
+    '<div class="row" style="gap:6px;margin-bottom:4px">'+roxySamples.map(function(s){return '<button class="btn ghost sm exq" data-q="'+E.esc(s)+'">'+E.esc(s)+'</button>';}).join("")+'</div><div id="outroxy"></div>'));
+  var seatCount = DEPTS.length*5+1, g85 = DEPTS.filter(function(d){return d.gate===85;});
+  c.appendChild(E.card('<div class="between"><div><h2>The chain, top to bottom</h2><div class="card-sub">Owner → COO → DH → AE → Event Bus → Pacemaker → Triad. A conclusion can\'t skip a rung, and every rung leaves a record.</div></div><div>'+E.tag(E.money(E.ROOMS.org.mo)+"/mo · "+E.money(E.ROOMS.org.build)+" build · draft","ghost")+'</div></div>'+
+    '<div class="statrow" style="margin-bottom:6px">'+E.stat("Departments",DEPTS.length,"each a five-seat chain")+E.stat("Seats in the org",seatCount,(DEPTS.length*5)+" department seats + the COO")+E.stat("Bar at 85%",g85.length,g85.map(function(d){return d.name.split(" ")[0];}).join(" · ")+" — deals, settlement and law hold the high bar","watch")+'</div>'));
+  var SAMPLE = { booking:"Which dates should we confirm?", deals:"Can we put Nova Sol on sale?", box:"How is the Ember Coast pacing?", money:"What should we settle tonight?", production:"What has to happen before doors?", fnb:"How do we staff the bar for a sellout?", marketing:"Where do we spend the ad budget?", hr:"Do we have the crew for the run?", it:"Anything on the system watch list?", law:"Which matters need a real attorney?" };
+  function seatRows(dp){ return [{k:"DH",n:dp.dh.name,l:dp.dh.line},{k:"AE",n:dp.ae.name,l:dp.ae.line},{k:"Pacemaker",n:dp.pace.name,l:dp.pace.line},{k:"Lens A",n:dp.lensA.name,l:dp.lensA.line},{k:"Lens B",n:dp.lensB.name,l:dp.lensB.line}].map(function(s){return '<tr><td class="k">'+E.esc(s.k)+'</td><td><div class="t-main">'+E.esc(s.n)+'</div><div class="t-sub">'+E.esc(s.l)+'</div></td></tr>';}).join(""); }
+  var grid = document.createElement("div"); grid.className = "grid g2";
+  DEPTS.forEach(function (dp) {
+    var inner = '<div class="between"><div><h2>'+E.esc(dp.name)+'</h2><div class="card-sub">'+E.esc(dp.dh.name)+' → '+E.esc(dp.ae.name)+' → the bus → '+E.esc(dp.pace.name)+' → '+E.esc(dp.lensA.name)+' / '+E.esc(dp.lensB.name)+'</div></div><div>'+E.tag("bar "+dp.gate+"%",dp.gate>80?"watch":"ghost")+'</div></div>'+
+      '<table><thead><tr><th>Seat</th><th>Who, and what they own</th></tr></thead><tbody>'+seatRows(dp)+'</tbody></table>'+
+      '<div class="divider"></div><div class="row"><input id="q_'+dp.key+'" placeholder="'+E.esc(SAMPLE[dp.key]||"Ask this department")+'" style="flex:1;min-width:200px"><button class="btn sm" data-consult="'+dp.key+'">Consult</button></div><div id="out_'+dp.key+'"></div>';
+    var cardEl = E.card(inner); cardEl.style.borderLeft = "3px solid var(--a-"+dp.accent+")"; grid.appendChild(cardEl);
+  });
+  c.appendChild(grid);
+  c.appendChild(E.card('<div class="between"><div><h2>Live event bus</h2><div class="card-sub">Every hop of every consult on this page, newest last. Nothing moves off this bus.</div></div><div class="row" style="flex:none;flex-wrap:nowrap"><button class="btn ghost sm" id="busRefresh">Refresh</button><button class="btn ghost sm" id="busClear">Clear</button></div></div>'+
+    '<div id="busbox" class="bus" style="max-height:520px;overflow-y:auto"></div><div class="divider"></div>'+
+    '<div class="fence"><b>Ghost Mode.</b> A released conclusion is a conclusion, not an action. Nothing here has sold, settled, signed or spent — anything that would goes to the Approval Desk. <a href="approvals.html">Open the desk →</a></div>'));
+  function contractHTML(dp,v,passed,head,topic,routedBy){ var pv=Math.max(0,Math.min(100,Number(v.conf)||0));
+    return '<div class="divider"></div><div class="'+(passed?"busrow conclude":"busrow reject")+'" style="display:block"><div class="bus-topic">'+E.esc(topic)+'</div><div class="bus-from"><b>'+E.esc(dp.pace.name)+'</b> (Pacemaker) → '+E.esc(passed?dp.ae.name+" (AE) → "+COO.name+" (COO)":COO.name+" (COO) → the Owner")+'</div><div class="bus-body" style="margin-top:5px">'+E.esc(head)+'</div></div>'+
+      '<div class="conf"><span class="muted small">'+E.esc(dp.name)+' · bar '+dp.gate+'%</span><span class="conf-bar"><i class="conf-fill '+(passed?'':'under')+'" style="width:'+pv+'%"></i><span class="conf-gate" style="left:'+dp.gate+'%"></span></span><span class="conf-n">'+E.esc(v.conf)+'%</span><span class="muted small">'+(passed?"released":"held — needs a human")+'</span></div>'+
+      '<ul class="reasons">'+v.reasons.map(function(x){return '<li><span class="rtag '+E.esc(x.t)+'">'+E.esc(x.t.toUpperCase())+'</span><span>'+E.esc(x.s)+'</span></li>';}).join("")+'</ul>'+
+      '<div class="srcnote">'+E.esc(routedBy)+' Routed through '+E.esc(dp.dh.name)+' (DH) → '+E.esc(dp.ae.name)+' (AE) → the bus → '+E.esc(dp.pace.name)+' (Pacemaker) → '+E.esc(dp.lensA.name)+' / '+E.esc(dp.lensB.name)+' (opposing lenses, which never confer).</div>'; }
+  function busRowHTML(e){ var cls=e.kind==="conclude"?"busrow conclude":(e.kind==="reject"?"busrow reject":"busrow"); var meter="";
+    if(e.verdict&&e.gate){var passed=e.kind!=="reject";var pv=Math.max(0,Math.min(100,Number(e.verdict.conf)||0));meter='<div class="conf"><span class="muted small">bar '+E.esc(e.gate)+'%</span><span class="conf-bar"><i class="conf-fill '+(passed?'':'under')+'" style="width:'+pv+'%"></i><span class="conf-gate" style="left:'+E.esc(e.gate)+'%"></span></span><span class="conf-n">'+E.esc(e.verdict.conf)+'%</span></div>';}
+    return '<div class="'+cls+'"><div class="bus-t">'+E.esc(e.stamp||"")+'</div><div><div class="bus-topic">'+E.esc(e.topic)+'</div><div class="bus-from"><b>'+E.esc(e.from)+'</b> → '+E.esc(e.to)+'</div><div class="bus-body">'+E.esc(e.body)+'</div>'+meter+'</div></div>'; }
+  function renderBus(){ var box=document.getElementById("busbox"); if(!box) return; var bus=E.db().bus||[]; if(!bus.length){box.innerHTML='<div class="empty">The bus is quiet. Ask Roxy above, or consult a department — every hop lands here, oldest first, newest last.</div>';return;} box.innerHTML=bus.map(busRowHTML).join(""); box.scrollTop=box.scrollHeight; }
+  function runConsult(key){ var dp=byKey(key); if(!dp) return; var input=document.getElementById("q_"+key); var q=(input&&input.value.trim())||SAMPLE[key]||"Department review"; if(input)input.value=q; var r=E.consult(key,q); if(!r)return; var head=r.passed?r.verdict.stance:"Held below the "+dp.gate+"% bar at "+r.verdict.conf+"%. "+COO.name+" routes it up with the reasons attached rather than bluffing it. "+r.verdict.stance; document.getElementById("out_"+key).innerHTML=contractHTML(dp,r.verdict,r.passed,head,r.passed?(key+".pacemaker.released"):"escalation.below_bar","Consulted directly, without going through the COO."); renderBus(); E.toast(r.passed?dp.pace.name+" released at "+r.verdict.conf+"%.":dp.pace.name+" held it at "+r.verdict.conf+"% — escalated.","ok"); }
+  function askRoxy(q){ if(!q){E.toast("Type a question first.","");return;} var a=E.askRoxy(q); var dp=a.dept; document.getElementById("outroxy").innerHTML=contractHTML(dp,a.result.verdict,a.result.passed,a.packaged,a.result.passed?"coo.released":"escalation.below_bar",COO.name+" read the ask and routed it to "+dp.name+" herself."); renderBus(); E.toast(COO.name+" routed it to "+dp.name+".","ok"); }
+  setTimeout(function(){ var q=document.getElementById("qroxy");
+    document.getElementById("goroxy").addEventListener("click",function(){askRoxy(q.value.trim());});
+    q.addEventListener("keydown",function(e){if(e.key==="Enter")askRoxy(this.value.trim());});
+    Array.prototype.forEach.call(document.querySelectorAll(".exq"),function(b){b.addEventListener("click",function(){q.value=this.dataset.q;askRoxy(this.dataset.q);});});
+    Array.prototype.forEach.call(document.querySelectorAll("[data-consult]"),function(b){b.addEventListener("click",function(){runConsult(this.dataset.consult);});});
+    Array.prototype.forEach.call(document.querySelectorAll('[id^="q_"]'),function(i){i.addEventListener("keydown",function(e){if(e.key==="Enter")runConsult(this.id.slice(2));});});
+    document.getElementById("busRefresh").addEventListener("click",function(){renderBus();E.toast((E.db().bus||[]).length+" events on the bus.","ok");});
+    document.getElementById("busClear").addEventListener("click",function(){E.save(function(d){d.bus=[];});renderBus();E.toast("Bus cleared.","ok");});
+    var t=document.getElementById("toRoxy"); if(t)t.addEventListener("click",function(){if(q.scrollIntoView)q.scrollIntoView({behavior:"smooth",block:"center"});q.focus();});
+    renderBus();
+  },0);
+})();
+</script></body></html>

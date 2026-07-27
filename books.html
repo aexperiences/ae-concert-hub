@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Venue Metrics · Amphitheater OS</title><link rel="icon" href="https://www.aexperiences.com/Amphitheater_OS.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="amph.css"></head><body>
+<script src="amph.js"></script>
+<script>
+(function () {
+  var E = window.Amph, c = E.mount({ active:"books.html", crumb:"Venue Metrics" }), d = E.db();
+  c.appendChild(E.page("Venue Metrics","The per-show P&L, computed — not reconstructed at year-end. Gross, taxes and fees, expenses, the deal, and the venue net for every show, plus sell-through and per-cap across the slate."));
+
+  var net = E.totalVenueNet(d), gross = d.shows.reduce(function(a,s){return a+E.grossBoxOffice(s);},0), exp = d.shows.reduce(function(a,s){return a+E.showExpenses(s);},0), art = d.shows.reduce(function(a,s){return a+E.artistCut(s);},0);
+  c.appendChild(E.card('<h2>The slate P&amp;L</h2><div class="card-sub">Everything on the books, rolled up.</div>'+
+    '<div class="statrow">'+
+      E.stat("Gross box office", E.money(gross), "at current counts", "mag")+
+      E.stat("Artist settlements", E.money(art), "across the deals")+
+      E.stat("Show expenses", E.money(exp), "production, marketing, staff…")+
+      E.stat("Venue net", E.money(net), "the business", net>0?"good":"bad")+
+    '</div>'));
+
+  c.appendChild(E.card('<h2>Per-show P&amp;L</h2><div class="card-sub">The full waterfall for every show — this is what the settlement sheet reads.</div>'+
+    '<table><thead><tr><th>Show</th><th style="text-align:right">Gross</th><th style="text-align:right">Tax+fees</th><th style="text-align:right">Expenses</th><th style="text-align:right">Artist</th><th style="text-align:right">Venue net</th></tr></thead><tbody>'+
+    d.shows.map(function(s){ var vn=E.venueNet(s);
+      return '<tr><td><div class="t-main">'+E.esc(s.artist)+'</div><div class="t-sub">'+E.pct(E.sellThrough(s))+' sold</div></td>'+
+      '<td style="text-align:right" class="mono">'+E.money(E.grossBoxOffice(s))+'</td>'+
+      '<td style="text-align:right" class="mono">'+E.money(E.ticketTax(s)+E.facilityFees(s))+'</td>'+
+      '<td style="text-align:right" class="mono">'+E.money(E.showExpenses(s))+'</td>'+
+      '<td style="text-align:right" class="mono">'+E.money(E.artistCut(s))+'</td>'+
+      '<td style="text-align:right" class="mono"><b style="color:'+(vn>0?'var(--good)':'var(--bad)')+'">'+E.money(vn)+'</b></td></tr>'; }).join("")+
+    '<tr class="grandrow"><td><b>Slate</b></td><td style="text-align:right" class="mono"><b>'+E.money(gross)+'</b></td><td style="text-align:right" class="mono"><b>'+E.money(d.shows.reduce(function(a,s){return a+E.ticketTax(s)+E.facilityFees(s);},0))+'</b></td><td style="text-align:right" class="mono"><b>'+E.money(exp)+'</b></td><td style="text-align:right" class="mono"><b>'+E.money(art)+'</b></td><td style="text-align:right" class="mono"><b>'+E.money(net)+'</b></td></tr>'+
+    '</tbody></table>'+E.srcNote("All figures computed from this OS's own box office, deals and expenses — no external reconciliation.")));
+})();
+</script></body></html>

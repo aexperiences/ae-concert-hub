@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Law · Contracts · Amphitheater OS</title><link rel="icon" href="https://www.aexperiences.com/Amphitheater_OS.png">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="amph.css"></head><body>
+<script src="amph.js"></script>
+<script>
+(function () {
+  var E = window.Amph, c = E.mount({ active:"law.html", crumb:"Law · Contracts" }), d = E.db();
+  c.appendChild(E.page("Law · Contracts","Booking agreements, PRO licensing, liquor and occupancy. This department is advisory only — it flags exposure and packages the matter, but anything with real risk holds under an 85% bar and routes to a real attorney. It never gives legal advice.",
+    '<span class="tag watch">advisory · bar 85%</span>'));
+
+  c.appendChild(E.card('<div class="fence crim"><b>Not a lawyer.</b> Amphitheater OS surfaces contract and compliance matters and recommends when to involve counsel. It does not practice law, and nothing here is legal advice. The high confidence bar exists so the OS escalates rather than bluffs.</div>'));
+
+  var open = d.matters.filter(function(m){return m.state==="Open";});
+  c.appendChild(E.card('<div class="between"><div><h2>Open matters</h2><div class="card-sub">Ranked by risk. High-risk items route to a real attorney before anything moves.</div></div><div>'+E.tag(open.length+" open", open.length?"watch":"good")+'</div></div>'+
+    '<table><thead><tr><th>Matter</th><th style="width:110px">Risk</th><th>Reference</th></tr></thead><tbody>'+
+    d.matters.map(function(m){ var rk=m.risk==="High"?"crim":(m.risk==="Medium"?"watch":"ghost");
+      return '<tr><td><div class="t-main">'+E.esc(m.title)+'</div><div class="t-sub">'+E.esc(m.note)+'</div></td><td>'+E.tag(m.risk,rk)+'</td><td class="muted small">'+E.esc(m.ref)+'</td></tr>'; }).join("")+'</tbody></table>'+
+    '<div class="fence" style="margin-top:12px"><b>The one that gates a sale:</b> Nova Sol is announced but its booking agreement isn\'t executed. Selling a date without a signed contract is direct exposure — Law holds the on-sale and routes it up. <a href="deals.html">See the deal →</a></div>'));
+})();
+</script></body></html>
