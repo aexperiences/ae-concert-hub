@@ -288,20 +288,38 @@ input[type=range]{padding:0; border:none; background:transparent; accent-color:v
 .gate-wrap{position:relative; z-index:1; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:44px 20px}
 
 .navscrim{position:fixed; inset:0; background:rgba(12,8,14,.5); z-index:49; opacity:0; visibility:hidden; transition:opacity .2s}
+
+/* === AE mobile pass (Jul 27 2026) === */
 @media(max-width:860px){
+  html,body{overflow-x:hidden}
   .app{grid-template-columns:1fr}
   .navtoggle{display:inline-flex}
-  .sidebar{position:fixed; top:0; left:0; z-index:50; width:264px; height:100vh; transform:translateX(-100%); transition:transform .22s ease; box-shadow:var(--sh-lg)}
+  .sidebar{position:fixed; top:0; left:0; z-index:50; width:272px; max-width:84vw; height:100vh; height:100dvh; transform:translateX(-100%); transition:transform .22s ease; box-shadow:var(--sh-lg)}
   .app.nav-open .sidebar{transform:translateX(0)}
   .app.nav-open .navscrim{opacity:1; visibility:visible}
-  .tiermenu{right:8px; left:8px; width:auto}
-  .content{padding:18px 16px 40px}
+  .navlink{padding:11px 10px; font-size:14px}
+  .nav-group{padding-top:14px}
+  .tiermenu{position:fixed; top:60px; right:8px; left:8px; width:auto; max-height:80dvh}
+  .content{padding:16px 14px 40px}
   .g2,.g3,.g4{grid-template-columns:1fr}
-  .topbar{padding:11px 16px}
-  .ribbon{padding:7px 16px}
+  .statrow{grid-template-columns:1fr 1fr}
+  .topbar{padding:10px 14px; flex-wrap:wrap; gap:9px}
+  .crumbs{min-width:0; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .ribbon{padding:7px 14px; font-size:11.5px}
   .who{display:none}
+  .between{flex-wrap:wrap}
   .pagehead{flex-wrap:wrap}
   .pagehead-actions{margin-left:0}
-  table{font-size:12px}
+  /* the right-side-cutoff fix: a wide table becomes a horizontally scrollable
+     block inside its card, so columns are swipeable instead of clipped off-screen */
+  table{display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; max-width:100%; font-size:12px}
+  #toast-wrap{left:12px; right:12px; bottom:12px}
+  .toast{max-width:none}
 }
-@media(max-width:520px){ .tierpill .price{display:none} .pagehead h1{font-size:20px} }
+@media(max-width:520px){
+  .tierpill .price{display:none}
+  .pagehead h1{font-size:20px}
+  .statrow{grid-template-columns:1fr}
+  .content{padding:14px 12px 36px}
+  .topbar .crumbs{font-size:12px}
+}
