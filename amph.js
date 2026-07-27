@@ -65,16 +65,16 @@
     shows: [
       { id:"s1", artist:"The Ember Coast", date:"2026-08-09", genre:"Indie rock", cap:900, status:"On sale",
         contractSigned:true, depositReceived:true, onSale:true, settled:false,
-        deal:{ type:"vs", guarantee:9000, splitPct:85 },
+        deal:{ type:"guarantee", guarantee:9000 },
         tiers:[ tier("GA",32,700,540,24,12), tier("Reserved (balcony)",42,150,138,6,4), tier("Cabaret (front tables)",65,50,44,4,2) ],
-        expenses:{ prod:5200, mkt:2400, hosp:1800, staff:3100, fac:1500 },
-        note:"On sale, selling well — 82% in. Headliner vs-deal: $9k guarantee + 85% of the overage." },
+        expenses:{ prod:3800, mkt:2000, hosp:1200, staff:2200, fac:1200 },
+        note:"On sale, selling well — 82% in. Flat $9k guarantee — the venue took the risk and keeps every dollar over breakeven." },
       { id:"s2", artist:"Marlowe & the Tides", date:"2026-08-16", genre:"Folk / Americana", cap:900, status:"On sale",
         contractSigned:true, depositReceived:true, onSale:true, settled:false,
         deal:{ type:"door", artistPct:80 },
         tiers:[ tier("GA",28,700,410,30,0), tier("Reserved (balcony)",36,150,96,8,0), tier("Cabaret (front tables)",55,50,31,6,0) ],
-        expenses:{ prod:4100, mkt:2900, hosp:1400, staff:2800, fac:1500 },
-        note:"Door deal, 80% to the artist after expenses. Marketing ran hot — watch the expense line." },
+        expenses:{ prod:2400, mkt:1600, hosp:800, staff:1500, fac:500 },
+        note:"Door deal, 80% to the artist after expenses. Thin for the venue by design — the bar is where this one pays." },
       { id:"s3", artist:"Nova Sol (DJ set)", date:"2026-08-23", genre:"Electronic", cap:900, status:"Announced — not on sale",
         contractSigned:false, depositReceived:false, onSale:false, settled:false,
         deal:{ type:"guarantee", guarantee:14000 },
@@ -85,13 +85,13 @@
         contractSigned:true, depositReceived:true, onSale:true, settled:true,
         deal:{ type:"vs", guarantee:7500, splitPct:80 },
         tiers:[ tier("GA",30,700,700,20,0), tier("Reserved (balcony)",40,150,150,10,0), tier("Cabaret (front tables)",60,50,50,8,0) ],
-        expenses:{ prod:4800, mkt:2100, hosp:1600, staff:2900, fac:1500 },
+        expenses:{ prod:3000, mkt:1500, hosp:1400, staff:2200, fac:500 },
         note:"Sold out. Settled and paid — the settlement sheet went to the tour manager the same night." },
       { id:"s5", artist:"Comedy Night — Dave Rourke", date:"2026-08-30", genre:"Comedy", cap:600, status:"On sale",
         contractSigned:true, depositReceived:true, onSale:true, settled:false,
         deal:{ type:"guarantee", guarantee:6000 },
         tiers:[ tier("Reserved",34,500,300,20,0), tier("Cabaret (front tables)",55,100,58,10,0) ],
-        expenses:{ prod:1600, mkt:1900, hosp:900, staff:2200, fac:1200 },
+        expenses:{ prod:1400, mkt:1200, hosp:600, staff:700, fac:300 },
         note:"Seated comedy, flat guarantee. Steady walk-up expected." }
     ],
     team: [
@@ -143,7 +143,7 @@
   function canGoOnSale(sh){ return !!(sh.contractSigned && sh.depositReceived); }
   function blockedOnSale(d){ d=d||db(); return d.shows.filter(function(s){ return !s.onSale && !canGoOnSale(s); }); }
   function unsettled(d){ d=d||db(); return d.shows.filter(function(s){ return !s.settled && s.onSale; }); }
-  function totalVenueNet(d){ d=d||db(); return d.shows.reduce(function(s,sh){ return s+venueNet(sh); },0); }
+  function totalVenueNet(d){ d=d||db(); return d.shows.filter(function(sh){ return sh.onSale; }).reduce(function(s,sh){ return s+venueNet(sh); },0); }
   function avgSellThrough(d){ d=d||db(); var on=d.shows.filter(function(s){return s.onSale;}); if(!on.length) return 0; return on.reduce(function(s,sh){return s+sellThrough(sh);},0)/on.length; }
   function settleShow(id){ return save(function(d){ d.shows.forEach(function(s){ if(s.id===id) s.settled=true; }); }); }
 
