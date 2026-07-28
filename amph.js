@@ -18,7 +18,7 @@
 
   var KEY = "amph_showroom_v1";
   var IDLE_MS = 20 * 60 * 1000;
-  var STORE = sessionStorage;
+  var STORE = (function(){ try{ localStorage.setItem('_t','1'); localStorage.removeItem('_t'); return localStorage; }catch(e){ return sessionStorage; } })();
 
   function now() { return Date.now(); }
   function read() { try { return JSON.parse(STORE.getItem(KEY)) || null; } catch (e) { return null; } }
@@ -29,7 +29,7 @@
       matters: clone(SEED.matters), approvals: clone(SEED.approvals), bus: [], seq: 1 };
   }
   function clone(a){ return JSON.parse(JSON.stringify(a)); }
-  function db() { var d = read(); if (!d) { d = fresh(); write(d); return d; } if (now()-(d._t||0) > IDLE_MS) { d = fresh(); write(d); } return d; }
+  function db() { var d = read(); if (!d) { d = fresh(); write(d); return d; } return d; }
   function save(mut) { var d = db(); mut(d); write(d); return d; }
   function resetFloor() { var d = fresh(); write(d); return d; }
 
@@ -169,7 +169,7 @@
   };
   var DEPTS = [
     { group:"Command", items:[ { href:"dashboard.html", label:"Command Center", ic:"◎" }, { href:"approvals.html", label:"Approval Desk", ic:"✓", accent:"ops" } ]},
-    { group:"The Bookings", items:[ { href:"calendar.html", label:"Shows & Calendar", ic:"▦", room:"calendar", accent:"calendar" }, { href:"deals.html", label:"Artists & Deals", ic:"◆", room:"deals", accent:"deals" }, { href:"advance.html", label:"Advance & Riders", ic:"⛭", room:"advance", accent:"advance" } ]},
+    { group:"The Bookings", items:[ { href:"calendar.html", label:"Shows & Calendar", ic:"▦", room:"calendar", accent:"calendar" }, { href:"contacts.html", label:"Contacts", ic:"☎" }, { href:"connect.html", label:"Connect · Video", ic:"◉" }, { href:"records.html", label:"Records · Filing", ic:"▤" }, { href:"deals.html", label:"Artists & Deals", ic:"◆", room:"deals", accent:"deals" }, { href:"advance.html", label:"Advance & Riders", ic:"⛭", room:"advance", accent:"advance" } ]},
     { group:"The Money", items:[ { href:"boxoffice.html", label:"Box Office", ic:"◧", room:"boxoffice", accent:"box" }, { href:"settlement.html", label:"Settlement", ic:"❖", room:"settlement", accent:"settle" }, { href:"books.html", label:"Venue Metrics", ic:"◭", room:"books", accent:"books" } ]},
     { group:"The House", items:[ { href:"fnb.html", label:"Front of House & F&B", ic:"♥", room:"fnb", accent:"fnb" }, { href:"marketing.html", label:"Marketing & Members", ic:"◈", room:"marketing", accent:"market" }, { href:"hr.html", label:"Staffing", ic:"☷", room:"hr", accent:"hr" } ]},
     { group:"Systems & Governance", items:[ { href:"it.html", label:"IT · System Health", ic:"⚙", room:"it", accent:"it" }, { href:"law.html", label:"Law · Contracts", ic:"⚖", room:"law", accent:"law" }, { href:"org.html", label:"Agent Org · Bus", ic:"❖", room:"org", accent:"ops" } ]}
@@ -298,7 +298,7 @@
   function renderTopbar(crumb) {
     var p = priceNow();
     var bar = document.createElement("div"); bar.className = "topbar";
-    bar.innerHTML = '<button class="navtoggle" id="navToggle" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button><div class="crumbs">Amphitheater OS · <b>'+esc(crumb)+'</b></div><div class="spacer"></div><div class="tierpill" id="tierPill" role="button" tabindex="0"><span class="dot"></span><div><b>'+esc(p.tier.name)+(p.changed?' <i class="cfg">configured</i>':'')+'</b> <span class="price">'+money(p.mo)+'/mo · '+money(p.build)+' build</span></div><span class="chev">▾</span></div><div class="who"><div class="av">DR</div><div>Dana Reyes<br><span class="muted small">Owner · Talent Buyer</span></div></div>';
+    bar.innerHTML = '<button class="navtoggle" id="navToggle" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button><div class="crumbs">Amphitheater OS · <b>'+esc(crumb)+'</b></div><div class="spacer"></div><div class="tierpill" id="tierPillStatic"><span class="dot"></span><div><b>'+esc(p.tier.name)+(p.changed?' <i class="cfg">configured</i>':'')+'</b> <span class="price">'+money(p.mo)+'/mo · '+money(p.build)+' build</span></div><span class="chev">▾</span></div><div class="who"><div class="av">DR</div><div>Dana Reyes<br><span class="muted small">Owner · Talent Buyer</span></div></div>';
     var menu = document.createElement("div"); menu.className = "tiermenu"; menu.id = "tierMenu";
     menu.appendChild(el('<div class="tm-head">Start from a package, then <b>add or take off any department</b>. Every one is priced on its own, so the build fits the venue instead of the venue fitting the build.</div>'));
     Object.keys(TIERS).sort(function (a,b){ return TIERS[b].rank-TIERS[a].rank; }).forEach(function (k) {
@@ -487,4 +487,40 @@
   }
   function boot(){ init(); setTimeout(init,200); setTimeout(init,600); setTimeout(init,1400); }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot); else boot();
+})();
+
+
+/* ── AE Connect — hub-wide incoming-call watcher (ae-connect-watcher) ── */
+(function(){
+  if (typeof document==='undefined') return;
+  var API=(window.AMPHITHEATER_API||'https://ae-connect-api.vercel.app')+'/api/connect', NS='amphitheater';
+  function me(){ try{ return JSON.parse(sessionStorage.getItem('amphitheater_connect_me')); }catch(e){ return null; } }
+  function post(p){ return fetch(API,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({ns:NS},p))}).then(function(r){return r.json();}).catch(function(){return {ok:false};}); }
+  var showing=false;
+  function card(r){
+    if(showing)return; showing=true;
+    var d=document.createElement('div');
+    d.style.cssText='position:fixed;right:18px;top:74px;z-index:9600;background:#161d24;color:#eaf1f6;border-radius:14px;padding:16px 18px;box-shadow:0 20px 60px rgba(0,0,0,.45);max-width:300px;font-family:system-ui,sans-serif;border-left:4px solid #e8a33d';
+    d.innerHTML='<div style="font-weight:700;font-size:15px">\ud83d\udcf9 '+(r.name||'Someone')+' is calling</div>'+
+      '<div style="font-size:12px;opacity:.7;margin:3px 0 12px">'+(r.subject||'Incoming video call')+'</div>'+
+      '<button id="aeJoin" style="font:inherit;font-weight:700;background:#e8a33d;color:#241a08;border:none;border-radius:9px;padding:10px 16px;cursor:pointer">Join</button> '+
+      '<button id="aeDis" style="font:inherit;background:none;border:1px solid #3f5468;color:#9fb2c2;border-radius:9px;padding:10px 14px;cursor:pointer">Dismiss</button>';
+    document.body.appendChild(d);
+    function done(){ try{document.body.removeChild(d);}catch(e){} showing=false; }
+    d.querySelector('#aeDis').onclick=done;
+    d.querySelector('#aeJoin').onclick=function(){ done(); var m=me();
+      function go(){ window.AmphMeet.open({room:r.room,displayName:m?m.name:'Guest',subject:r.subject||''}); }
+      if(window.AmphMeet) go(); else { var sc=document.createElement('script'); sc.src='amphitheater-rtc.js'; sc.onload=go; document.head.appendChild(sc); } };
+  }
+  function tick(){ var m=me(); if(!m) return;
+    post({do:'poll',me:m.slug}).then(function(r){
+      if(r&&r.ok&&r.ring&&r.ring.room) card(r.ring);
+      if(r&&r.ok&&typeof r.unread==='number'){
+        var a=document.querySelector('a[href="connect.html"]');
+        if(a){ var b=a.querySelector('.ae-ub');
+          if(r.unread>0){ if(!b){ b=document.createElement('span'); b.className='ae-ub';
+            b.style.cssText='display:inline-block;min-width:17px;text-align:center;background:#e8a33d;color:#241a08;border-radius:999px;font-size:10.5px;font-weight:700;padding:1px 5px;margin-left:7px'; a.appendChild(b); }
+            b.textContent=r.unread; } else if(b){ b.remove(); } } }
+    }); }
+  setInterval(tick,6000); setTimeout(tick,1500);
 })();
