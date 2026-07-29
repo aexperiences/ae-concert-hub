@@ -324,7 +324,17 @@
   }
   function ribbon() { return el('<div class="ribbon"><span class="live">LIVE SHOWROOM</span> — this is the real OS, not a slideshow. Everything you type stays in your browser and resets when you leave. <a href="javascript:void(0)" id="resetFloor">Reset the floor</a></div>'); }
   function footer() { return el('<div class="ae-credit">Powered by <b>Accelerated Experiences LLC</b> · Amphitheater OS is a white-label build. Demo data is a fictional venue; benchmark figures are estimates and tagged.</div>'); }
+  /* The fleet-wide Command Center polish layer. One file on the store, loaded by
+     every product, so a change lands everywhere at once instead of fourteen times. */
+  function loadFlava(){
+    if(document.getElementById("aeFlavaCss")) return;
+    var l=document.createElement("link"); l.id="aeFlavaCss"; l.rel="stylesheet";
+    l.href="https://www.aexperiences.com/ae-flava.css"; document.head.appendChild(l);
+    var j=document.createElement("script"); j.src="https://www.aexperiences.com/ae-flava.js";
+    j.defer=true; document.head.appendChild(j);
+  }
   function mount(opts) {
+    try{ loadFlava(); }catch(e){}
     opts = opts || {}; db();
     var app = document.createElement("div"); app.className = "app";
     var scrim = document.createElement("div"); scrim.className = "navscrim"; scrim.id = "navScrim";
