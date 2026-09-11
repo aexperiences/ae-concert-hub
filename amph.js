@@ -163,9 +163,9 @@
     org:        { label:"Agent Org · Bus", mo:150, build:1300, why:"The ten AI department chains, the event bus, and the confidence gates. The venue's brain." }
   };
   var TIERS = {
-    lite: { key:"lite", name:"Club", rank:1, mo:600, build:3500, desc:"The room running. Calendar, box office (GA/reserved/cabaret), deals, advance and settlement.", base:"Single room · up to 8 seats", includes:["calendar","boxoffice","deals","settlement","advance"] },
-    standard: { key:"standard", name:"Venue", rank:2, mo:1400, build:9000, desc:"The full house. Adds F&B, marketing & members, venue metrics, staffing, IT — and the agent org.", base:"Single venue · up to 25 seats", includes:["calendar","boxoffice","deals","settlement","advance","fnb","marketing","books","hr","it","org"] },
-    grandsuite: { key:"grandsuite", name:"Group / Promoter", rank:3, mo:3000, build:22000, desc:"Multi-venue, nothing held back. Every department, the full agent org, and counsel.", base:"Multi-venue · unlimited seats · dedicated environment", includes:["calendar","boxoffice","deals","settlement","advance","fnb","marketing","books","hr","it","law","org"] }
+    lite: { key:"lite", name:"Core", rank:1, mo:600, build:0, desc:"The room running. Calendar, box office (GA/reserved/cabaret), deals, advance and settlement.", base:"Single room · up to 8 seats", includes:["calendar","boxoffice","deals","settlement","advance"] },
+    standard: { key:"standard", name:"Elite", rank:2, mo:1400, build:0, desc:"The full house. Adds F&B, marketing & members, venue metrics, staffing, IT — and the agent org.", base:"Single venue · up to 25 seats", includes:["calendar","boxoffice","deals","settlement","advance","fnb","marketing","books","hr","it","org"] },
+    grandsuite: { key:"grandsuite", name:"Mothership", rank:3, mo:3000, build:0, desc:"Multi-venue, nothing held back. Every department, the full agent org, and counsel.", base:"Multi-venue · unlimited seats · dedicated environment", includes:["calendar","boxoffice","deals","settlement","advance","fnb","marketing","books","hr","it","law","org"] }
   };
   var DEPTS = [
     { group:"Command", items:[ { href:"dashboard.html", label:"Command Center", ic:"◎" }, { href:"approvals.html", label:"Approval Desk", ic:"✓", accent:"ops" } ]},
