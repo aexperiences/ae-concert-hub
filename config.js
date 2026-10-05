@@ -12,7 +12,7 @@ window.HUB_CONFIG = {
   brand: {
     name:    "Amphitheater OS",
     short:   "Amphitheater",
-    version: "V1.1",
+    version: "V3.5",
     tagline: "Concerts & comedy · reserved, GA, or cabaret — sold in one place",
     logo:    "https://aexperiences.com/Amphitheater_OS.png",
     credit:  "Powered by Accelerated Experiences, LLC"
