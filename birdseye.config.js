@@ -19,7 +19,7 @@
     figures: {
     "approvals": { money: false, source: "approvals[pending]", fn: function(E,D,H,S){ return ([H.cnt(D.approvals, a => a.state === 'Pending'), 'waiting on you']); } },
     "law": { money: false, source: "matters[state=Open].risk", fn: function(E,D,H,S){ return ([H.cnt(D.matters, m => m.state === 'Open'), 'open matter{s} · ' + H.cnt(D.matters, m => m.state === 'Open' && m.risk === 'High') + ' high risk']); } },
-    "it": { money: false, source: "systems[].state", fn: function(E,D,H,S){ return ([H.cnt(D.systems, s => s.state === 'WATCH') || 'Clear', H.cnt(D.systems, s => s.state === 'WATCH') ? 'systems on watch' : 'every system clear']); } },
+    "it": { money: false, source: "systems[].state", fn: function(E,D,H,S){ return ([H.cnt(D.systems, s => s.state === 'WATCH') || 'Clear', H.cnt(D.systems, s => s.state === 'WATCH') ? (H.cnt(D.systems, s => s.state === 'WATCH') === 1 ? 'system on watch' : 'systems on watch') : 'every system clear']); } },
     "hr": { money: false, source: "team", fn: function(E,D,H,S){ return ([D.team.length, 'on the team']); } },
     "calendar": { money: false, source: "shows[status≠Settled]", fn: function(E,D,H,S){ return ([H.cnt(D.shows, s => s.status !== 'Settled'), 'show{s} on the calendar']); } },
     "deals": { money: false, source: "shows[contractSigned=false]", fn: function(E,D,H,S){ return ([H.cnt(D.shows, s => !s.contractSigned), 'offer{s} without a signed contract']); } },

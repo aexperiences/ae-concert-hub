@@ -26,6 +26,8 @@ html.bs-on body{margin:0}
 
 /* ---- the legacy chassis steps aside: no side nav on any size ---- */
 html.bs-on .bs-legacy-off{display:none!important}
+/* floating buttons some legacy scripts inject AFTER mount (e.g. manual.js's "?"), so adopt() never tags them */
+html.bs-on .man-fab,html.bs-on .as-fab,html.bs-on #aeCooFab{display:none!important}
 html.bs-on .app{display:block!important;grid-template-columns:none!important}
 html.bs-on .main{margin-left:0!important}
 html.bs-on .content{margin:0 auto;padding-bottom:130px}
