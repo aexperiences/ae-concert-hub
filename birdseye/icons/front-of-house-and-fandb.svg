@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="100%" height="100%">
+<defs>
+<linearGradient id="tile" x1="0" y1="0" x2="0.35" y2="1">
+<stop offset="0%" stop-color="#c8905a"/><stop offset="46%" stop-color="#74401c"/><stop offset="100%" stop-color="#200e04"/></linearGradient>
+<linearGradient id="glare" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#fff" stop-opacity=".20"/><stop offset="44%" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<linearGradient id="pap" x1="0" y1="0" x2="0.3" y2="1">
+<stop offset="0%" stop-color="#fdfbf4"/><stop offset="100%" stop-color="#e8e2d2"/></linearGradient>
+<linearGradient id="gild" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#ffe08a"/><stop offset="100%" stop-color="#b98d1c"/></linearGradient>
+<linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#e3e8ec"/><stop offset="100%" stop-color="#8e99a2"/></linearGradient>
+<linearGradient id="wood" x1="0" y1="0" x2="0.2" y2="1">
+<stop offset="0%" stop-color="#a9743f"/><stop offset="100%" stop-color="#5d3c1c"/></linearGradient>
+<linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<linearGradient id="screen" x1="0" y1="0" x2="0.3" y2="1">
+<stop offset="0%" stop-color="#1d3a4e"/><stop offset="100%" stop-color="#0a1824"/></linearGradient>
+<linearGradient id="accent" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#e0a83a"/><stop offset="100%" stop-color="#9a6f14"/></linearGradient>
+</defs>
+<rect width="1024" height="1024" fill="url(#tile)"/><rect width="1024" height="1024" fill="url(#glare)"/>
+<circle cx="512" cy="400" r="254" fill="#e0a83a" opacity="0.044"/><path d="M527 250 L512 90 L497 250 Z" fill="#e0a83a" opacity=".20"/><path d="M595 275 L624 207 L579 266 Z" fill="#e0a83a" opacity=".20"/><path d="M649 338 L780 245 L634 312 Z" fill="#e0a83a" opacity=".20"/><path d="M662 409 L735 400 L662 391 Z" fill="#e0a83a" opacity=".20"/><path d="M634 488 L780 555 L649 462 Z" fill="#e0a83a" opacity=".20"/><path d="M579 534 L624 593 L595 525 Z" fill="#e0a83a" opacity=".20"/><path d="M497 550 L512 710 L527 550 Z" fill="#e0a83a" opacity=".20"/><path d="M429 525 L400 593 L445 534 Z" fill="#e0a83a" opacity=".20"/><path d="M375 462 L244 555 L390 488 Z" fill="#e0a83a" opacity=".20"/><path d="M362 391 L289 400 L362 409 Z" fill="#e0a83a" opacity=".20"/><path d="M390 312 L244 245 L375 338 Z" fill="#e0a83a" opacity=".20"/><path d="M445 266 L400 207 L429 275 Z" fill="#e0a83a" opacity=".20"/>
+<path d="M0 806 L1024 806 L1024 1024 L0 1024 Z" fill="#200e04" opacity=".72"/><rect x="0" y="806" width="1024" height="5" fill="#fff" opacity=".10"/>
+<ellipse cx="512" cy="884" rx="340" ry="32" fill="#000" opacity=".45"/>
+<rect x="160" y="560" width="704" height="216" rx="14" fill="#5c3418"/><rect x="160" y="560" width="704" height="30" rx="14" fill="#8a5428"/><rect x="160" y="560" width="704" height="10" fill="#fff" opacity=".18"/><rect x="206" y="196" width="612" height="300" rx="14" fill="#2c1a0c"/><rect x="206" y="196" width="612" height="300" rx="14" fill="url(#glass)"/><rect x="246" y="242" width="210" height="22" rx="11" fill="#e0a83a" opacity=".9"/><rect x="246" y="328" width="150" height="22" rx="11" fill="#d8d0bc" opacity=".9"/><rect x="246" y="414" width="240" height="22" rx="11" fill="#e0a83a" opacity=".9"/><g transform="translate(276 436)"><path d="M0 0 L104 0 L92 150 L12 150 Z" fill="#c8102e"/><path d="M0 0 L104 0 L92 150 L12 150 Z" fill="url(#glass)"/><rect x="-6" y="-16" width="116" height="22" rx="11" fill="#f4eede"/></g><g transform="translate(372 436)"><path d="M0 0 L104 0 L92 150 L12 150 Z" fill="#c8102e"/><path d="M0 0 L104 0 L92 150 L12 150 Z" fill="url(#glass)"/><rect x="-6" y="-16" width="116" height="22" rx="11" fill="#f4eede"/></g><g transform="translate(468 436)"><path d="M0 0 L104 0 L92 150 L12 150 Z" fill="#c8102e"/><path d="M0 0 L104 0 L92 150 L12 150 Z" fill="url(#glass)"/><rect x="-6" y="-16" width="116" height="22" rx="11" fill="#f4eede"/></g><g transform="translate(700 470)"><path d="M0 0 Q-80 -70 -30 -116 Q10 -148 40 -96 Q70 -148 110 -116 Q160 -70 80 0 Z" fill="#b9762c" transform="translate(-40 110)"/></g></svg>
