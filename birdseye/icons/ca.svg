@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="100%" height="100%">
+<defs>
+<linearGradient id="tile" x1="0" y1="0" x2="0.35" y2="1">
+<stop offset="0%" stop-color="#c7865a"/><stop offset="46%" stop-color="#8a5330"/><stop offset="100%" stop-color="#3a2114"/></linearGradient>
+<linearGradient id="glare" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#fff" stop-opacity=".20"/><stop offset="44%" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<linearGradient id="pap" x1="0" y1="0" x2="0.3" y2="1">
+<stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#ece8dc"/></linearGradient>
+<linearGradient id="trace" x1="0" y1="0" x2="0.3" y2="1">
+<stop offset="0%" stop-color="#fbf7ec"/><stop offset="100%" stop-color="#e7dfc9"/></linearGradient>
+<linearGradient id="brassy" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#e2b86c"/><stop offset="100%" stop-color="#9a6f2c"/></linearGradient>
+<linearGradient id="steel" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0%" stop-color="#e3e8ec"/><stop offset="100%" stop-color="#9aa5ad"/></linearGradient>
+
+</defs>
+<rect width="1024" height="1024" fill="url(#tile)"/><rect width="1024" height="1024" fill="url(#glare)"/>
+<ellipse cx="512" cy="900" rx="350" ry="30" fill="#000" opacity=".38"/>
+
+  <!-- clipboard -->
+  <rect x="236" y="180" width="552" height="690" rx="30" fill="#5a4a3a"/>
+  <rect x="236" y="180" width="552" height="690" rx="30" fill="#000" opacity=".28" transform="translate(12 16)"/>
+  <rect x="236" y="180" width="552" height="690" rx="30" fill="#6a5744"/>
+  <rect x="412" y="150" width="200" height="74" rx="22" fill="url(#steel)"/>
+  <rect x="452" y="166" width="120" height="30" rx="12" fill="#5c6167"/>
+  <!-- the RFI form -->
+  <rect x="276" y="240" width="472" height="590" rx="10" fill="url(#pap)"/>
+  <rect x="276" y="240" width="472" height="72" rx="10" fill="#c7865a"/>
+  <rect x="276" y="292" width="472" height="20" fill="#c7865a"/>
+  <rect x="612" y="258" width="112" height="36" rx="9" fill="#3a2114"/><rect x="630" y="270" width="76" height="12" rx="6" fill="#f2e6d6"/>
+  <rect x="304" y="340" width="300" height="14" rx="7" fill="#9aa4ac"/><rect x="304" y="378" width="380" height="14" rx="7" fill="#9aa4ac"/><rect x="304" y="416" width="340" height="14" rx="7" fill="#9aa4ac"/><rect x="304" y="454" width="400" height="14" rx="7" fill="#9aa4ac"/><rect x="304" y="492" width="360" height="14" rx="7" fill="#9aa4ac"/>
+  <rect x="304" y="560" width="416" height="90" rx="10" fill="#f3efe6" stroke="#d9d0bd" stroke-width="3"/>
+  <rect x="322" y="580" width="320" height="13" rx="7" fill="#b9c0c6"/><rect x="322" y="610" width="260" height="13" rx="7" fill="#b9c0c6"/>
+  <!-- ball in court -->
+  <g transform="rotate(-10 600 730)">
+    <rect x="470" y="690" width="260" height="84" rx="18" fill="none" stroke="#8a4b46" stroke-width="12"/><path d="M520 732 L660 732 M630 706 L662 732 L630 758" fill="none" stroke="#8a4b46" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <!-- the hard hat, hung on the corner -->
+  <g transform="rotate(-14 700 300)">
+    <path d="M 560 330 C 560 250 620 200 700 200 C 780 200 840 250 840 330 Z" fill="#000" opacity=".3" transform="translate(8 12)"/>
+    <path d="M 560 330 C 560 250 620 200 700 200 C 780 200 840 250 840 330 Z" fill="#e0a83a"/>
+    <rect x="530" y="322" width="340" height="34" rx="17" fill="#e0a83a"/>
+    <rect x="530" y="322" width="340" height="34" rx="17" fill="#000" opacity=".14"/>
+    <rect x="684" y="212" width="32" height="112" rx="12" fill="#000" opacity=".12"/>
+    <path d="M 600 300 C 610 250 650 226 700 226" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" opacity=".35"/>
+  </g>
+
+</svg>

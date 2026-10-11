@@ -78,13 +78,10 @@
   var T=window.Amph;
   var c=T.mount({active:"connect.html",crumb:"Connect"});
   var API=window.AMPHITHEATER_API+'/api/connect'; var NS='amphitheater';
-  var TEAM=[
-    {slug:"roxy-vance",name:"Roxy Vance",role:"General Manager",init:"RV"},
-    {slug:"dev-sharma",name:"Dev Sharma",role:"Talent Buyer",init:"DS"},
-    {slug:"cole-jansen",name:"Cole Jansen",role:"Production Manager",init:"CJ"},
-    {slug:"tara-moss",name:"Tara Moss",role:"Box Office Manager",init:"TM"},
-    {slug:"ben-okoro",name:"Ben Okoro",role:"Operations Lead",init:"BO"}
-  ];
+  /* The team comes from the venue's own book (people only; the AI seats live in the Agent Org). */
+  var TEAM=(window.Amph.db().team||[]).filter(function(m){return m.type==="Human";}).map(function(m){
+    var w=m.name.split(/\s+/); return {slug:m.id,name:m.name,role:m.role,init:(w[0][0]||"")+((w[w.length-1]||"")[0]||"")};
+  });
   var CHANNELS=[
     {ch:"venue",name:"# venue",desc:"The whole venue"},
     {ch:"show-day",name:"# show-day",desc:"Today's show"},
@@ -114,7 +111,7 @@
       '</div>'+
       '<div>'+
         '<div class="card"><h2 style="margin:0 0 4px">Meeting rooms</h2><div class="card-sub" style="margin-bottom:8px">Native video, up to the whole firm. A room with people in it shows in “Live now” above.</div><div id="cnRooms"></div></div>'+
-        '<div class="card" style="margin-top:18px"><h2 style="margin:0 0 4px">Outreach — bring in a guest</h2><div class="card-sub" style="margin-bottom:8px">A client, the county reviewer, a contractor: name them, send the link, they join from a plain browser. No app, no account.</div>'+
+        '<div class="card" style="margin-top:18px"><h2 style="margin:0 0 4px">Outreach — bring in a guest</h2><div class="card-sub" style="margin-bottom:8px">A tour manager, an agent, a vendor: name them, send the link, they join from a plain browser. No app, no account.</div>'+
         '<div style="display:flex;gap:9px;flex-wrap:wrap"><input id="cnGuest" placeholder="Guest or meeting name…" style="flex:1;min-width:170px;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font:inherit;background:var(--card)">'+
         '<button class="cn-btn amber" id="cnInvite">Create invite link</button></div>'+
         '<div id="cnInviteOut" style="margin-top:10px;font-size:12.5px;color:var(--mut);word-break:break-all"></div></div>'+

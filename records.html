@@ -58,13 +58,13 @@
     {k:"venue",ic:"🏢",name:"The venue",desc:"Lease, capacity certs, inspections."}
   ];
 
-  /* Seeded records — real McArthur artifacts where they exist, honestly labeled. */
+  /* Seeded records — filed by the venue's own team. */
   var SEED=[
-    {cab:"shows",name:"Headliner — signed offer & rider",kind:"pdf",tag:"sot",who:"Dev Sharma",when:"2026-07-19",note:"Governs the date."},
-    {cab:"settlement",name:"Settlement — July 12 show",kind:"xls",tag:"fin",who:"Tara Moss",when:"2026-07-13",note:""},
-    {cab:"permits",name:"Special event permit — season",kind:"pdf",tag:"sot",who:"Ben Okoro",when:"2026-04-01",note:""},
-    {cab:"safety",name:"Emergency action plan",kind:"doc",tag:"sot",who:"Cole Jansen",when:"2026-05-06",note:""},
-    {cab:"venue",name:"Occupancy & capacity certificate",kind:"pdf",tag:"sot",who:"Roxy Vance",when:"2026-01-01",note:""}
+    {cab:"shows",name:"Headliner — signed offer & rider",kind:"pdf",tag:"sot",who:"Dana Reyes",when:"2026-07-19",note:"Governs the date."},
+    {cab:"settlement",name:"Settlement — July 12 show",kind:"xls",tag:"fin",who:"Priya Shah",when:"2026-07-13",note:""},
+    {cab:"permits",name:"Special event permit — season",kind:"pdf",tag:"sot",who:"Dana Reyes",when:"2026-04-01",note:""},
+    {cab:"safety",name:"Emergency action plan",kind:"doc",tag:"sot",who:"Marcus Vega",when:"2026-05-06",note:""},
+    {cab:"venue",name:"Occupancy & capacity certificate",kind:"pdf",tag:"sot",who:"Dana Reyes",when:"2026-01-01",note:""}
   ];
 
   function load(){ try{ var d=JSON.parse(sessionStorage.getItem(KEY)); if(d&&d.length) return d; }catch(e){} return SEED.slice(); }

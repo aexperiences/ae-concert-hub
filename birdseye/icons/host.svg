@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="100%" height="100%">
+<defs>
+<linearGradient id="tile" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0%" stop-color="#c25a4e"/><stop offset="46%" stop-color="#7a2430"/><stop offset="100%" stop-color="#2a0b10"/></linearGradient>
+<linearGradient id="glare" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#fff" stop-opacity=".22"/><stop offset="44%" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<radialGradient id="halo" cx="0.5" cy="0.46" r="0.42"><stop offset="0%" stop-color="#ffe2a6" stop-opacity=".30"/><stop offset="100%" stop-color="#ffe2a6" stop-opacity="0"/></radialGradient>
+</defs>
+<rect width="1024" height="1024" fill="url(#tile)"/>
+<rect width="1024" height="1024" fill="url(#halo)"/>
+<g fill="#e0a83a" opacity=".13"><polygon points="512,470 463,-88 561,-88"/><polygon points="512,470 690,112 733,136"/><polygon points="512,470 971,149 1020,233"/><polygon points="512,470 911,446 911,494"/><polygon points="512,470 1020,707 971,791"/><polygon points="512,470 733,804 690,828"/><polygon points="512,470 561,1028 463,1028"/><polygon points="512,470 334,828 291,804"/><polygon points="512,470 53,791 4,707"/><polygon points="512,470 113,494 113,446"/><polygon points="512,470 4,233 53,149"/><polygon points="512,470 291,136 334,112"/></g>
+<rect width="1024" height="1024" fill="url(#glare)"/>
+
+<path d="M0 820 L1024 820 L1024 1024 L0 1024Z" fill="#1a0609" opacity=".35"/>
+<ellipse cx="512" cy="900" rx="330" ry="30" fill="#12030a" opacity=".55"/>
+<!-- host -->
+<g>
+ <rect x="402" y="380" width="220" height="300" rx="90" fill="#1f1a1c"/>
+ <path d="M462 392 L512 470 L562 392 Z" fill="#f4ede2"/>
+ <path d="M496 420 L512 440 L528 420 L512 470 Z" fill="#e8952a"/>
+ <circle cx="512" cy="300" r="92" fill="#f0b98d"/>
+ <clipPath id="hostHair"><circle cx="512" cy="300" r="98"/></clipPath>
+ <g clip-path="url(#hostHair)"><path d="M400 196 L624 196 L624 262 C590 246 560 238 530 246 C500 236 450 246 400 290 Z" fill="#3a2418"/></g>
+ <path d="M418 262 C418 300 422 318 428 330 L438 330 C434 300 436 280 444 262 Z" fill="#3a2418"/>
+ <path d="M606 262 C606 300 602 318 596 330 L586 330 C590 300 588 280 580 262 Z" fill="#3a2418"/>
+ <path d="M470 222 C500 206 560 210 590 236" stroke="#5a3a26" stroke-width="10" fill="none" stroke-linecap="round" opacity=".7"/>
+ <circle cx="482" cy="306" r="10" fill="#2a1a12"/><circle cx="542" cy="306" r="10" fill="#2a1a12"/>
+ <path d="M482 342 Q512 366 542 342" stroke="#2a1a12" stroke-width="10" fill="none" stroke-linecap="round"/>
+</g>
+<!-- podium -->
+<path d="M300 560 L724 560 L700 600 L324 600 Z" fill="#f2c27a"/>
+<rect x="336" y="600" width="352" height="300" rx="18" fill="#a8622b"/>
+<rect x="336" y="600" width="352" height="300" rx="18" fill="#000" opacity=".0"/>
+<rect x="372" y="640" width="280" height="56" rx="12" fill="#8a4d1f"/>
+<rect x="372" y="720" width="280" height="140" rx="16" fill="#8a4d1f"/>
+<rect x="336" y="600" width="352" height="24" fill="#7a3f15" opacity=".5"/>
+<!-- tablet on top -->
+<g transform="rotate(-8 450 548)">
+ <rect x="360" y="508" width="190" height="62" rx="12" fill="#141210"/>
+ <rect x="372" y="518" width="166" height="42" rx="6" fill="#ffd27a"/>
+ <rect x="384" y="528" width="90" height="8" rx="4" fill="#7a2430"/><rect x="384" y="543" width="120" height="8" rx="4" fill="#7a2430" opacity=".6"/>
+</g>
+<!-- menus stack -->
+<rect x="572" y="520" width="120" height="42" rx="8" fill="#f4ede2"/>
+<rect x="580" y="508" width="120" height="42" rx="8" fill="#e8952a"/>
+<rect x="596" y="522" width="70" height="8" rx="4" fill="#fff" opacity=".85"/>
+</svg>
