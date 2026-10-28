@@ -325,7 +325,7 @@
     var frag = document.createDocumentFragment(); frag.appendChild(bar); frag.appendChild(menu); return frag;
   }
   function ribbon() { return el('<div class="ribbon"><span class="live">LIVE SHOWROOM</span> — this is the real OS, not a slideshow. Everything you type stays in your browser and resets when you leave. <a href="javascript:void(0)" id="resetFloor">Reset the floor</a></div>'); }
-  function footer() { return el('<div class="ae-credit">Powered by <b>Accelerated Experiences LLC</b> · Amphitheater OS is a white-label build. Demo data is a fictional venue; benchmark figures are estimates and tagged.</div>'); }
+  function footer() { return el('<div class="ae-credit">Powered by <b>Accelerated Experiences LLC</b> · Amphitheater OS is an Accelerated Operating System. Demo data is a fictional venue; benchmark figures are estimates and tagged.</div>'); }
   /* The fleet-wide Command Center polish layer. One file on the store, loaded by
      every product, so a change lands everywhere at once instead of fourteen times. */
   function loadFlava(){
